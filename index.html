@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ONG Google Docs and LaTeX Equation Builder</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#5d6772;--bd:#d8dde3;--ac:#1f5fbf;--ac2:#e8f0fc}
+@media(prefers-color-scheme:dark){:root{--bg:#14171a;--card:#1d2126;--tx:#e8ebee;--mu:#9aa5b1;--bd:#333a42;--ac:#6ea3f0;--ac2:#22303f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:16px 20px 4px}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--mu);font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding:14px 20px 28px;max-width:1300px;margin:auto}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}
+h2{font-size:13px;margin:0 0 8px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;resize:vertical}
+input,select{font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:5px 7px;min-width:0}
+button{font:inherit;cursor:pointer;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:7px;padding:6px 10px}
+button:hover{border-color:var(--ac)}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+#pv{min-height:90px;display:flex;align-items:center;justify-content:center;overflow-x:auto;font-size:22px;padding:10px;margin:10px 0;border:1px dashed var(--bd);border-radius:8px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.bar label{font-size:13px;color:var(--mu)}
+#tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}#tabs button{padding:4px 9px;font-size:13px}#tabs .on{background:var(--ac2);border-color:var(--ac);color:var(--ac);font-weight:600}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+#grid.wide{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+#grid button{min-height:46px;padding:4px 7px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:14px}
+#grid mjx-container{margin:0!important}
+#bpv svg{max-width:100%;height:auto}
+.row{display:flex;gap:6px;margin-bottom:6px}.row input{flex:1}
+#bpv{min-height:50px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0;font-size:18px}
+.mg{display:grid;gap:5px;margin:8px 0}.mg input{width:100%;text-align:center}
+details{margin-top:10px;font-size:13px;color:var(--mu)}summary{cursor:pointer;color:var(--tx);font-weight:600}details li{margin:4px 0}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+.hint{font-size:12px;color:var(--mu);margin:4px 0 8px}
+math-field{display:block;width:100%;font-size:28px;min-height:100px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+math-field:focus-within{outline:2px solid var(--ac)}
+mjx-assistive-mml{display:none!important}
+#pv svg~svg{display:none}
+@media(min-width:861px){main>section:first-child{position:sticky;top:10px;align-self:start;max-height:calc(100vh - 20px);overflow:auto}}
+#grid.sym{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))}#grid.sym button{font-size:16px}
+</style>
+<script defer src="https://cdn.jsdelivr.net/npm/mathlive/dist/mathlive.min.js"></script>
+<script>window.MathJax={startup:{typeset:false},svg:{fontCache:'none'}}</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+</head><body>
+<header><h1>ONG Google Docs and LaTeX Equation Builder</h1>
+<p>Click a template, then click the boxes in the equation and type your numbers. No LaTeX knowledge needed. Press <b>Tab</b> to jump to the next box.</p></header>
+<main>
+<section class="card"><h2>Your equation</h2>
+<math-field id="mf" math-virtual-keyboard-policy="manual"></math-field>
+<div class="bar" style="margin:6px 0 8px"><button id="un">↶ Undo</button><button id="re">↷ Redo</button><button id="ar2" title="Click inside the braces of a piecewise function or matrix first">+ Add row</button><button id="cl" style="margin-left:auto">Clear</button></div>
+<div class="hint">Click a template, then click a box in the equation and type. Press Tab to jump to the next box. Use the keyboard icon for a symbol keypad.</div>
+<div class="hint" style="margin-top:10px">Preview (this is what gets copied)</div>
+<div id="pv" style="margin-top:0"></div>
+<h2 style="margin-top:14px">Copy to Google Docs</h2>
+<div class="bar"><button class="p" id="cI">Copy as image</button><button id="cD" title="Text for Google Docs' own equation editor (tables for piecewise and matrices)">Copy for Docs equation</button><button id="cL">Copy LaTeX</button><button id="dP">Download PNG</button></div>
+<div class="bar" style="margin-top:8px"><label>Wrap text in <select id="dl"><option value="1" selected>$ … $</option><option value="2">$$ … $$</option><option value="0">no wrapper</option></select></label>
+<label>Docs table cells <select id="cm"><option value="plain">plain math text</option><option value="docs">Docs equation commands</option></select></label>
+<label>Image size <select id="sc"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option></select></label></div>
+<details><summary>LaTeX code (advanced)</summary><textarea id="ed" spellcheck="false" placeholder="LaTeX appears here. You can also type or paste LaTeX."></textarea>
+<div class="hint" style="margin-top:8px">Google Docs equation text (what “Copy for Docs equation” copies)</div><textarea id="dt" spellcheck="false" style="min-height:60px"></textarea></details>
+<details><summary>Getting it into Google Docs</summary><ul>
+<li><b>Copy as image</b>, click in your Doc, paste (Ctrl/Cmd+V). Works for everything, including piecewise functions, systems and matrices. Resize in Docs if needed.</li>
+<li><b>Editable Docs equation:</b> click <b>Copy for Docs equation</b>, then paste it into your Doc (it is wrapped in $ … $ by default; change “Wrap text in” if you prefer another form), or paste it into Insert → Equation without the $ wrapper. Docs converts commands such as <code>\frac</code>, <code>\sqrt</code>, <code>\theta</code> and <code>\choose</code> when you press space after them. If pasted commands stay as plain text, click right after each command and press space.</li>
+<li><b>Piecewise, systems and matrices:</b> Docs equations can’t draw these, so <b>Copy for Docs equation</b> copies them as a borderless <b>table</b> instead: a large brace or bracket beside one row per piece. Paste it straight into your Doc. Cells hold plain math text (x², √x, ≤) you can edit, or choose “Docs equation commands” to get text you can turn into Docs equations cell by cell (type Insert → Equation inside the cell). If borders show up, select the table and set the border width to 0.</li>
+<li>If the image button is blocked by your browser, use <b>Download PNG</b> and insert it via Insert → Image.</li></ul></details>
+</section>
+<section class="card"><h2>Templates</h2><div id="tabs"></div><div id="grid"></div><div id="bx" hidden></div></section>
+</main><div id="toast"></div>
+<script>
+const RAW=String.raw`#Basics
+\frac{\square}{\square}
+\square^{\square}
+\square_{\square}
+\sqrt{\square}
+\sqrt[\square]{\square}
+\left|\square\right|
+\left(\square\right)
+\left[\square,\ \square\right)
+(-\infty,\infty)
+\{x\in\mathbb{R}\mid\square\}
+\square^2
+\square^{-1}
+\left\{\square\right\}
+\left\lfloor\square\right\rfloor
+\overline{\square}
+#Symbols
+\alpha ;; alpha
+\beta ;; beta
+\gamma ;; gamma
+\delta ;; delta
+\epsilon ;; epsilon
+\theta ;; theta
+\lambda ;; lambda
+\mu ;; mu
+\pi ;; pi
+\rho ;; rho
+\sigma ;; sigma
+\tau ;; tau
+\phi ;; phi
+\omega ;; omega
+\Delta ;; Delta
+\Sigma ;; Sigma
+\Theta ;; Theta
+\Pi ;; Pi
+\Phi ;; Phi
+\Omega ;; Omega
+\pm ;; plus or minus
+\mp ;; mp
+\times ;; times
+\div ;; div
+\cdot ;; cdot
+\circ ;; circ
+\infty ;; infinity
+\prime ;; prime (derivative)
+\ldots ;; ldots
+\cdots ;; cdots
+\% ;; percent
+< ;; <
+> ;; >
+\le ;; less than or equal
+\ge ;; greater than or equal
+\ne ;; not equal
+\approx ;; approx
+\equiv ;; equiv
+\propto ;; propto
+\cong ;; cong
+\sim ;; sim
+\in ;; in
+\notin ;; notin
+\subset ;; subset
+\subseteq ;; subseteq
+\cup ;; cup
+\cap ;; cap
+\emptyset ;; emptyset
+\mathbb{R} ;; mathbb{R}
+\mathbb{Z} ;; mathbb{Z}
+\mathbb{N} ;; mathbb{N}
+\mathbb{Q} ;; mathbb{Q}
+\therefore ;; therefore
+\because ;; because
+\Rightarrow ;; Rightarrow
+\Leftarrow ;; Leftarrow
+\Leftrightarrow ;; Leftrightarrow
+\to ;; tends to
+\leftarrow ;; leftarrow
+\leftrightarrow ;; leftrightarrow
+\forall ;; forall
+\exists ;; exists
+\neg ;; neg
+^\circ ;; degree
+\angle ;; angle
+\perp ;; perp
+\parallel ;; parallel
+\triangle ;; triangle
+\partial ;; partial
+#Functions
+f(x)=\square
+f^{-1}(x)
+(f\circ g)(x)=f(g(x))
+(f+g)(x)
+\left(\frac{f}{g}\right)(x)
+y=a\,f\!\left(k(x-d)\right)+c
+y=ax^2+bx+c
+y=a(x-h)^2+k
+y=a(x-r)(x-s)
+x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+b^2-4ac
+f(x)=a_nx^n+a_{n-1}x^{n-1}+\cdots+a_1x+a_0
+f(a)=0
+f(x)=(x-a)\,q(x)+R
+f(x)=\frac{P(x)}{Q(x)}
+\frac{f(b)-f(a)}{b-a}
+\frac{\Delta y}{\Delta x}
+x\in(-\infty,\square)\cup(\square,\infty)
+y=\left|\square\right|
+y=\sqrt{\square}
+\text{Domain: }\{x\in\mathbb{R}\mid\square\}
+\text{Range: }\{y\in\mathbb{R}\mid\square\}
+#Piecewise
+f(x)=\begin{cases}\square, & \square \\ \square, & \square\end{cases}
+f(x)=\begin{cases}\square, & \square \\ \square, & \square \\ \square, & \square\end{cases}
+f(x)=\begin{cases}\square, & \square \\ \square, & \square \\ \square, & \square \\ \square, & \square\end{cases}
+f(x)=\begin{cases}\square, & x<\square \\ \square, & x\ge\square\end{cases}
+f(x)=\begin{cases}\square, & x<\square \\ \square, & \square\le x<\square \\ \square, & x\ge\square\end{cases}
+\begin{cases}\square, & \square \\ \square, & \square\end{cases}
+\left|x\right|=\begin{cases}x, & x\ge0 \\ -x, & x<0\end{cases}
+\text{sgn}(x)=\begin{cases}1, & x>0 \\ 0, & x=0 \\ -1, & x<0\end{cases}
+#Exp & Log
+y=a\,b^{x}
+A=A_0(1+r)^t
+A=A_0\left(\tfrac{1}{2}\right)^{\frac{t}{h}}
+y=e^{x}
+\log_{\square}\square
+\ln\square
+\log_b x=\frac{\log x}{\log b}
+\log_b(xy)=\log_b x+\log_b y
+\log_b\!\left(\frac{x}{y}\right)=\log_b x-\log_b y
+\log_b x^{n}=n\log_b x
+b^{x}=y\iff x=\log_b y
+#Trig
+\sin\theta
+\cos\theta
+\tan\theta
+\csc\theta
+\sec\theta
+\cot\theta
+\sin^{-1}\square
+\sin^2\theta+\cos^2\theta=1
+\tan\theta=\frac{\sin\theta}{\cos\theta}
+\frac{\sin A}{a}=\frac{\sin B}{b}=\frac{\sin C}{c}
+c^2=a^2+b^2-2ab\cos C
+y=a\sin\!\left(k(x-d)\right)+c
+y=a\cos\!\left(k(x-d)\right)+c
+\text{period}=\frac{2\pi}{k}
+\frac{\pi}{\square}
+\sin(A\pm B)=\sin A\cos B\pm\cos A\sin B
+\cos(A\pm B)=\cos A\cos B\mp\sin A\sin B
+\sin2\theta=2\sin\theta\cos\theta
+\cos2\theta=\cos^2\theta-\sin^2\theta
+#Sequences & Finance
+t_n=t_1+(n-1)d
+t_n=t_1r^{n-1}
+S_n=\frac{n}{2}\left(2t_1+(n-1)d\right)
+S_n=\frac{t_1(r^n-1)}{r-1}
+S_\infty=\frac{t_1}{1-r}
+t_n=t_{n-1}+\square,\ t_1=\square
+\sum_{k=1}^{n}\square
+\binom{n}{r}
+n!
+A=P(1+i)^n
+FV=R\left[\frac{(1+i)^n-1}{i}\right]
+PV=R\left[\frac{1-(1+i)^{-n}}{i}\right]
+(a+b)^n=\sum_{k=0}^{n}\binom{n}{k}a^{n-k}b^k
+#Calculus
+\lim_{x\to\square}\square
+\lim_{x\to a^{+}}f(x)
+\lim_{x\to\infty}f(x)
+f'(x)=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}
+f'(x)
+f''(x)
+\frac{dy}{dx}
+\frac{d^2y}{dx^2}
+\frac{d}{dx}\left[\square\right]
+\left.\frac{dy}{dx}\right|_{x=a}
+\frac{d}{dx}x^n=nx^{n-1}
+(fg)'=f'g+fg'
+\left(\frac{f}{g}\right)'=\frac{f'g-fg'}{g^2}
+\frac{dy}{dx}=\frac{dy}{du}\cdot\frac{du}{dx}
+\frac{d}{dx}e^{x}=e^{x}
+\frac{d}{dx}\ln x=\frac{1}{x}
+\frac{d}{dx}\sin x=\cos x
+y-y_1=m(x-x_1)
+\frac{dV}{dt}
+#Vectors
+\vec{v}
+\overrightarrow{AB}
+\left|\vec{v}\right|
+\hat{v}
+\begin{pmatrix}\square\\\square\end{pmatrix}
+\begin{pmatrix}\square\\\square\\\square\end{pmatrix}
+\vec{a}\cdot\vec{b}=\left|\vec{a}\right|\left|\vec{b}\right|\cos\theta
+\vec{a}\times\vec{b}
+\left|\vec{a}\times\vec{b}\right|=\left|\vec{a}\right|\left|\vec{b}\right|\sin\theta
+\text{proj}_{\vec{b}}\vec{a}=\left(\frac{\vec{a}\cdot\vec{b}}{\left|\vec{b}\right|^2}\right)\vec{b}
+\vec{r}=\vec{r}_0+t\vec{m},\ t\in\mathbb{R}
+(x,y,z)=(x_0,y_0,z_0)+t(a,b,c)
+\frac{x-x_0}{a}=\frac{y-y_0}{b}=\frac{z-z_0}{c}
+Ax+By+Cz+D=0
+\vec{n}\cdot(\vec{r}-\vec{r}_0)=0`;
+const CAT={};let cur;RAW.split('\n').forEach(l=>{if(l[0]==='#')CAT[cur=l.slice(1)]=[];else CAT[cur].push(l)});
+const $=id=>document.getElementById(id),ed=$('ed'),pv=$('pv'),SQ='\\square';
+const ready=()=>new Promise(r=>{const t=()=>window.MathJax&&MathJax.startup&&MathJax.startup.promise?MathJax.startup.promise.then(r):setTimeout(t,50);t()});
+async function R(l,el,d){await ready();el.replaceChildren(await MathJax.tex2svgPromise(l,{display:!!d}))}
+function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.opacity=0,1800)}
+const wrap=t=>({1:'$'+t+'$',2:'$$'+t+'$$'}[$('dl').value]||t);
+const BB={R:'ℝ',Z:'ℤ',N:'ℕ',Q:'ℚ'};
+function toDocs(s){const un=/\\begin\{/.test(s);
+for(let i=0;i<3;i++)s=s.replace(/\\binom\{([^{}]*)\}\{([^{}]*)\}/g,'$1 \\choose $2').replace(/\\(?:text|mathrm)\{([^{}]*)\}/g,'$1');
+s=s.replace(/\\mathbb\{(\w)\}/g,(m,c)=>BB[c]||c).replace(/\\(?:left|right)\.?/g,'').replace(/\\[dt]frac/g,'\\frac')
+.replace(/\\overrightarrow\{([^{}]*)\}/g,'$1\u20D7').replace(/\\vec\{([^{}]*)\}/g,'$1\u20D7').replace(/\\hat\{([^{}]*)\}/g,'$1\u0302')
+.replace(/\^\\circ|\^\{\\circ\}/g,'°').replace(/\\le(?![a-z])/g,'\\leq').replace(/\\ge(?![a-z])/g,'\\geq').replace(/\\ne(?![a-z])/g,'\\neq')
+.replace(/\\mid/g,'|').replace(/\\iff/g,'⇔').replace(/\\therefore/g,'∴').replace(/\\square/g,'□').replace(/\\[,;!]/g,'').replace(/\\ /g,' ').replace(/\\([{}])/g,'$1');
+return {t:s.replace(/\s+/g,' ').trim(),un}}
+const SU={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾',n:'ⁿ',i:'ⁱ',x:'ˣ',y:'ʸ',a:'ᵃ',t:'ᵗ',k:'ᵏ',m:'ᵐ',r:'ʳ'},SB={'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋',n:'ₙ',i:'ᵢ',x:'ₓ',a:'ₐ',e:'ₑ',o:'ₒ',m:'ₘ',k:'ₖ',t:'ₜ',r:'ᵣ'};
+const GK={theta:'θ',alpha:'α',beta:'β',pi:'π',Delta:'Δ',phi:'φ',sigma:'σ',omega:'ω',lambda:'λ',mu:'μ',infty:'∞',pm:'±',mp:'∓',cdot:'·',times:'×',leq:'≤',geq:'≥',neq:'≠',in:'∈',cup:'∪',cap:'∩',to:'→',Rightarrow:'⇒',circ:'∘',cdots:'⋯'};
+const mp=(a,M,f)=>[...a].every(c=>M[c])?[...a].map(c=>M[c]).join(''):f+'('+a+')';
+function plain(s){s=toDocs(s).t.replace(/(\S+) \\choose (\S+)/g,'C($1,$2)');
+s=s.replace(/\^\{([^{}]*)\}/g,(m,a)=>mp(a,SU,'^')).replace(/\^([A-Za-z0-9])/g,(m,a)=>mp(a,SU,'^')).replace(/_\{([^{}]*)\}/g,(m,a)=>mp(a,SB,'_')).replace(/_([A-Za-z0-9])/g,(m,a)=>mp(a,SB,'_'));
+s=s.replace(/\\sqrt\[([^\]]*)\]\{([^{}]*)\}/g,(m,n,x)=>mp(n,SU,'^')+'√('+x+')').replace(/\\sqrt\{([^{}]*)\}/g,(m,x)=>/^\w+$/.test(x)?'√'+x:'√('+x+')');
+s=s.replace(/\\([A-Za-z]+)/g,(m,c)=>c==='frac'?m:GK[c]||c);
+for(let i=0;i<3;i++)s=s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,(m,a,b,o,str)=>{const ok=t=>/^(\d+\.?\d*|[A-Za-z])$/.test(t),r=(ok(a)?a:'('+a+')')+'/'+(ok(b)?b:'('+b+')');return /^[\w(√]/.test(str.slice(o+m.length))||(o>0&&/[\w)]$/.test(str.slice(0,o)))?'('+r+')':r});
+return s.replace(/[{}]/g,'').replace(/\s+/g,' ').trim()}
+function tbl(v){const m=v.match(/^([\s\S]*?)\\begin\{(cases|pmatrix|bmatrix|vmatrix)\}([\s\S]*)\\end\{\2\}([\s\S]*)$/);if(!m||/\\begin/.test(m[3]))return null;
+const f=s=>$('cm').value==='docs'?toDocs(s).t:plain(s),e=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),
+rows=m[3].split(/\\\\/).map(r=>r.split('&').map(c=>f(c.trim()))).filter(r=>r.some(c=>c)),n=rows.length;if(!n)return null;
+const BR={cases:['{',''],pmatrix:['(',')'],bmatrix:['[',']'],vmatrix:['|','|']}[m[2]],rs=` rowspan="${n}"`,w=Math.max(...rows.map(r=>r[0]===undefined?0:r.length));
+const W=a=>Math.max(30,Math.round(Math.max(0,...a.map(t=>t.length))*8.5+26)),big=`font-size:${Math.max(n,1)*22}px;`,cases=m[2]==='cases',pre=f(m[1].trim()),post=f(m[4].trim());
+const wp=W([pre]),wq=W([post]),wb=Math.max(36,n*14),we=W(rows.map(r=>r[0]||'')),wc=W(rows.map(r=>r[1]||'')),wm=Array.from({length:w},(_,j)=>W(rows.map(r=>r[j]||'')));
+const cs=(t,x,st,wd)=>`<td${x||''} width="${wd}" style="border:0;padding:2px 8px;vertical-align:middle;white-space:nowrap;width:${wd}px;min-width:${wd}px;${st||''}">${e(t)}</td>`;
+const cols=[...(pre?[wp]:[]),wb,...(cases?[we,wc]:wm),...(BR[1]?[wb]:[]),...(post?[wq]:[])];
+const html=`<table style="border-collapse:collapse;border:0;table-layout:fixed;width:${cols.reduce((x,y)=>x+y,0)}px"><colgroup>${cols.map(c=>`<col width="${c}" style="width:${c}px">`).join('')}</colgroup>`+rows.map((r,i)=>'<tr>'+(i?'':(pre?cs(pre,rs,'',wp):'')+cs(BR[0],rs,big,wb))+
+(cases?cs(r[0]||'',0,'',we)+cs(r[1]||'',0,'',wc):wm.map((wd,j)=>cs(r[j]||'',0,'text-align:center',wd)).join(''))+(i?'':(BR[1]?cs(BR[1],rs,big,wb):'')+(post?cs(post,rs,'',wq):''))+'</tr>').join('')+'</table>';
+return{html,text:(pre?pre+' ':'')+rows.map(r=>r.join('\t')).join('\n')+(post?' '+post:'')}}
+$('cD').onclick=async()=>{const v=ed.value.trim();if(!v)return;try{const t=tbl(v);if(t){await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([t.html],{type:'text/html'}),'text/plain':new Blob([t.text],{type:'text/plain'})})]);toast('Copied as a table. Paste it into your Doc');return}
+const d=toDocs(v);await navigator.clipboard.writeText(wrap(d.t));toast(d.un?'Copied, but Docs equations can’t do this layout: use Copy as image':'Copied. Paste into Insert → Equation')}catch(e){toast('Copy blocked: copy from the Docs equation text box')}};
+function upd(){try{localStorage.setItem('latexDraft',ed.value)}catch(e){}$('dt').value=toDocs(ed.value).t;return R(ed.value||'\\text{\\color{gray}preview}',pv,true)}
+const mf=$('mf'),toPh=s=>s.replace(/\\square/g,'\\placeholder{}'),fromPh=s=>s.replace(/\\placeholder(\[[^\]]*\])?\{[^}]*\}/g,'\\square');
+function sync(){ed.value=fromPh(mf.getValue('latex'));upd()}
+function ins(t){if(!mf.insert){toast('Editor still loading, try again');return}mf.focus();mf.insert(toPh(t),{format:'latex',selectionMode:'placeholder'});sync()}
+customElements.whenDefined('math-field').then(()=>{try{MathfieldElement.soundsDirectory=null}catch(e){}mf.value=toPh(ed.value);mf.addEventListener('input',sync)});
+$('un').onclick=()=>{if(mf.executeCommand){mf.executeCommand('undo');mf.focus();sync()}};
+$('re').onclick=()=>{if(mf.executeCommand){mf.executeCommand('redo');mf.focus();sync()}};
+$('ar2').onclick=()=>{if(mf.executeCommand){mf.focus();mf.executeCommand('addRowAfter');sync()}};
+ed.oninput=()=>{if(mf.setValue)mf.value=toPh(ed.value);upd()};
+ed.onkeydown=e=>{if(e.key==='Tab'&&!e.shiftKey){let i=ed.value.indexOf(SQ,ed.selectionEnd);if(i<0)i=ed.value.indexOf(SQ);if(i>=0){e.preventDefault();ed.setSelectionRange(i,i+SQ.length)}}};
+$('cl').onclick=()=>{ed.value='';if(mf.setValue)mf.value='';upd();if(mf.focus)mf.focus()};
+$('cL').onclick=async()=>{const v=ed.value.trim();if(!v)return;try{await navigator.clipboard.writeText(wrap(v));toast('LaTeX copied')}catch(e){toast('Copy blocked: select the text and copy manually')}};
+async function blob(){await upd();const svg=pv.querySelector('svg');if(!svg||pv.querySelector('[data-mjx-error]'))throw 0;const r=svg.getBoundingClientRect(),s=+$('sc').value,p=8*s,w=r.width*s,h=r.height*s;
+const c=svg.cloneNode(true);c.setAttribute('width',w);c.setAttribute('height',h);
+const x=new XMLSerializer().serializeToString(c).replace(/currentColor/g,'#000');
+const im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x)});
+const cv=document.createElement('canvas');cv.width=w+2*p;cv.height=h+2*p;const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,p,p,w,h);
+return new Promise(ok=>cv.toBlob(ok,'image/png'))}
+$('cI').onclick=async()=>{if(!ed.value.trim())return;try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob()})]);toast('Image copied. Paste it into your Doc')}catch(e){toast('Image copy blocked: use Download PNG')}};
+$('dP').onclick=async()=>{if(!ed.value.trim())return;try{const b=await blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='equation.png';a.click()}catch(e){toast('Could not render. Check the LaTeX')}};
+/* palette */
+const tabs=$('tabs'),grid=$('grid'),bx=$('bx');
+function show(n){[...tabs.children].forEach(b=>b.classList.toggle('on',b.textContent===n));const B=n==='Builders';grid.hidden=B;bx.hidden=!B;
+if(B){build(bx.dataset.k||'piecewise');return}
+grid.replaceChildren();grid.classList.toggle('wide',n==='Piecewise');grid.classList.toggle('sym',n==='Symbols');CAT[n].forEach(x=>{const [l,nm]=x.split(' ;; '),b=document.createElement('button');b.title=nm||l;b.onclick=()=>ins(l);grid.append(b);R(l,b).then(()=>fit(b))})}
+function fit(b){const s=b.querySelector('svg');if(!s)return;const r=s.getBoundingClientRect(),k=Math.min(1,(b.clientWidth-16)/r.width,96/r.height);if(k<1){s.setAttribute('width',r.width*k+'px');s.setAttribute('height',r.height*k+'px')}}
+[...Object.keys(CAT),'Builders'].forEach(n=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>show(n);tabs.append(b)});
+/* builders */
+const fx=s=>s.replace(/<=/g,'\\le ').replace(/>=/g,'\\ge ').replace(/!=/g,'\\ne ');
+const KINDS={piecewise:'Piecewise function',system:'System of equations',working:'Aligned working',matrix:'Matrix / column vector'};
+const PRE={piecewise:[['x^2','x<0'],['2x+1','x>=0']],system:[['2x+y=5'],['x-y=1']],working:[['3(x+2)=15'],['3x+6=15'],['3x=9'],['x=3']]};
+function gen(){const k=bx.dataset.k;
+if(k==='matrix'){const g=[...bx.querySelectorAll('.mg input')],c=+$('mc').value;if(!g.some(i=>i.value))return'';const rows=[];for(let i=0;i<g.length;i+=c)rows.push(g.slice(i,i+c).map(x=>fx(x.value)||'\\square').join(' & '));return`\\begin{${$('mt').value}}${rows.join(' \\\\ ')}\\end{${$('mt').value}}`}
+const rows=[...bx.querySelectorAll('.row')].map(r=>[...r.querySelectorAll('input')].map(i=>fx(i.value.trim()))).filter(r=>r[0]);if(!rows.length)return'';
+if(k==='piecewise')return`${$('fn').value||'f(x)'}=\\begin{cases}${rows.map(r=>r[0]+(r[1]?', & '+r[1]:'')).join(' \\\\ ')}\\end{cases}`;
+if(k==='system')return`\\begin{cases}${rows.map(r=>r[0]).join(' \\\\ ')}\\end{cases}`;
+return`\\begin{aligned}${rows.map(r=>/&/.test(r[0])?r[0]:r[0].replace(/(=|\\le |\\ge |<|>)/,'&$1')).join(' \\\\ ')}\\end{aligned}`}
+function prev(){R(gen()||'\\text{\\color{gray}preview}',$('bpv'))}
+function addRow(v){const k=bx.dataset.k,d=document.createElement('div');d.className='row';
+d.innerHTML=(k==='piecewise'?'<input placeholder="expression, e.g. x^2"><input placeholder="condition, e.g. x<0">':'<input placeholder="'+(k==='system'?'equation, e.g. 2x+y=5':'a line of working')+'">')+'<button title="Remove row">✕</button>';
+(v||[]).forEach((x,i)=>d.children[i].value=x);d.oninput=prev;d.lastChild.onclick=()=>{d.remove();prev()};$('rows').append(d)}
+function grid2(){const r=+$('mr').value,c=+$('mc').value,m=$('mgrid');m.style.gridTemplateColumns=`repeat(${c},minmax(0,70px))`;m.replaceChildren();for(let i=0;i<r*c;i++){const x=document.createElement('input');x.oninput=prev;m.append(x)}prev()}
+function build(k){bx.dataset.k=k;const m=k==='matrix';
+bx.innerHTML=`<div class="bar" style="margin-bottom:8px"><select id="ks">${Object.entries(KINDS).map(([a,b])=>`<option value="${a}"${a===k?' selected':''}>${b}</option>`).join('')}</select>`+
+(k==='piecewise'?'<label>Name <input id="fn" value="f(x)" size="7"></label>':'')+
+(m?'<label>Rows <select id="mr">'+[1,2,3,4,5].map(n=>`<option${n===3?' selected':''}>${n}</option>`).join('')+'</select></label><label>Columns <select id="mc">'+[1,2,3,4,5].map(n=>`<option>${n}</option>`).join('')+'</select></label><select id="mt"><option value="pmatrix">( )</option><option value="bmatrix">[ ]</option><option value="vmatrix">| |</option></select>':'')+
+`</div><div class="hint">${m?'Fill the grid. Use 1 column for a vector.':k==='working'?'One step per row. Equals signs are aligned automatically.':'Type LaTeX or shortcuts: &lt;= &gt;= != are converted for you.'}</div>`+
+(m?'<div class="mg" id="mgrid"></div>':'<div id="rows"></div><button id="ar">+ Add row</button>')+
+'<div id="bpv"></div><button class="p" id="bi">Insert into equation</button>';
+$('ks').onchange=e=>build(e.target.value);$('bi').onclick=()=>{const g=gen();if(g)ins(g)};
+if(m){$('mr').onchange=$('mc').onchange=grid2;$('mt').onchange=prev;grid2()}else{if($('fn'))$('fn').oninput=prev;$('ar').onclick=()=>addRow();PRE[k].forEach(addRow);prev()}}
+try{ed.value=localStorage.getItem('latexDraft')||''}catch(e){}
+show('Basics');upd();
+</script></body></html>
