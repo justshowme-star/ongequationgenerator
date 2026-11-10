@@ -1,356 +1,469 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ONG Google Docs and LaTeX Equation Builder</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coordinate Grid with Labeled Lines</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#5d6772;--bd:#d8dde3;--ac:#1f5fbf;--ac2:#e8f0fc}
-@media(prefers-color-scheme:dark){:root{--bg:#14171a;--card:#1d2126;--tx:#e8ebee;--mu:#9aa5b1;--bd:#333a42;--ac:#6ea3f0;--ac2:#22303f}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:16px 20px 4px}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--mu);font-size:13px}
-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding:14px 20px 28px;max-width:1300px;margin:auto}
-@media(max-width:860px){main{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}
-h2{font-size:13px;margin:0 0 8px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
-textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;resize:vertical}
-input,select{font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:5px 7px;min-width:0}
-button{font:inherit;cursor:pointer;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:7px;padding:6px 10px}
-button:hover{border-color:var(--ac)}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
-#pv{min-height:90px;display:flex;align-items:center;justify-content:center;overflow-x:auto;font-size:22px;padding:10px;margin:10px 0;border:1px dashed var(--bd);border-radius:8px}
-.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.bar label{font-size:13px;color:var(--mu)}
-#tabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}#tabs button{padding:4px 9px;font-size:13px}#tabs .on{background:var(--ac2);border-color:var(--ac);color:var(--ac);font-weight:600}
-#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
-#grid.wide{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
-#grid button{min-height:46px;padding:4px 7px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:14px}
-#grid mjx-container{margin:0!important}
-#bpv svg{max-width:100%;height:auto}
-.row{display:flex;gap:6px;margin-bottom:6px}.row input{flex:1}
-#bpv{min-height:50px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0;font-size:18px}
-.mg{display:grid;gap:5px;margin:8px 0}.mg input{width:100%;text-align:center}
-details{margin-top:10px;font-size:13px;color:var(--mu)}summary{cursor:pointer;color:var(--tx);font-weight:600}details li{margin:4px 0}
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
-.hint{font-size:12px;color:var(--mu);margin:4px 0 8px}
-math-field{display:block;width:100%;font-size:28px;min-height:100px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
-math-field:focus-within{outline:2px solid var(--ac)}
-mjx-assistive-mml{display:none!important}
-#pv svg~svg{display:none}
-@media(min-width:861px){main>section:first-child{position:sticky;top:10px;align-self:start;max-height:calc(100vh - 20px);overflow:auto}}
-#grid.sym{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))}#grid.sym button{font-size:16px}
+:root{--bg:#eef2f6;--panel:#fff;--ink:#14202e;--mute:#5b6b7c;--line:#cfd8e2;--accent:#1f5fbf;--bad:#c62828;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--panel:#17212c;--ink:#e6edf4;--mute:#93a3b4;--line:#2b3948;--accent:#6aa3f0;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0f1720;--panel:#17212c;--ink:#e6edf4;--mute:#93a3b4;--line:#2b3948;--accent:#6aa3f0;--bad:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
+.app{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media(max-width:860px){.app{grid-template-columns:1fr}}
+aside,.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+h1{font-size:19px;margin:0 0 2px}h2{font-size:14px;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
+.sub,.hint{color:var(--mute);font-size:13px;margin:0 0 6px}
+input,select,button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;min-width:0}
+input[type=color]{padding:1px;width:38px;height:30px}input[type=range]{padding:0;width:100%}input[type=checkbox]{width:auto}
+button{cursor:pointer}button:hover{border-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bad{border-color:var(--bad)}
+.row{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;display:grid;gap:6px}
+.l1{display:flex;gap:6px}.l1 .eq{flex:1;font-family:ui-monospace,Menlo,Consolas,monospace}
+.l2,.l3{display:flex;gap:6px;align-items:center}.l2{flex-wrap:wrap}.l2 .chk{display:flex;gap:4px;align-items:center;font-size:13px;color:var(--mute)}.l3 input{flex:1}
+.l4{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;align-items:center;font-size:13px;color:var(--mute)}
+.l4 label{display:flex;gap:6px;align-items:center}.l4 label:first-child{grid-column:1/-1;flex-direction:column;align-items:stretch;gap:2px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px}
+.grid3 label,.f label{display:grid;gap:2px;font-size:13px;color:var(--mute)}
+.f{display:grid;gap:8px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+.bar button{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stage{position:sticky;top:16px;align-self:start}
+@media(max-width:860px){.stage{position:static}}
+.wrap{overflow:auto;background:#fff;border-radius:6px;border:1px solid var(--line)}
+#fig{display:block;max-width:100%;height:auto;margin:0 auto}
+#note{color:var(--mute);font-size:13px;min-height:1.4em;margin-top:8px}
+@media print{body{background:#fff}aside,.bar,#note{display:none}.app{display:block;padding:0}.stage{border:0;padding:0;position:static}.wrap{border:0}}
+
+h2{display:flex;align-items:center;gap:8px;font-size:15px}
+.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px}
+h3{font-size:13px;margin:12px 0 6px}
+.row{padding:10px;background:var(--bg)}
+.head{display:flex;gap:6px;align-items:center}
+.head .eq{flex:1}
+.head .show{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--mute);white-space:nowrap}
+.kind{font-size:12px;color:var(--mute)}
+.row[data-type="f"] .kind::after{content:"Line or curve"}
+.row[data-type="v"] .kind::after{content:"Vertical line"}
+.row[data-type="pts"] .kind::after{content:"Point(s)"}
+.row[data-type="bad"] .kind::after{content:"Can\2019t read this yet. Check the equation.";color:var(--bad)}
+.row details{border-top:1px solid var(--line);padding-top:6px}
+.row summary{cursor:pointer;font-size:13px;font-weight:600;padding:2px 0}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;align-items:end}
+.g3 label,.g2 label{display:grid;gap:3px;font-size:12px;color:var(--mute)}
+.g2 .wide{grid-column:1/-1}
+.g2 .chk{display:flex;align-items:center;gap:6px;font-size:13px}
+.inl{display:flex;gap:6px}.inl input{flex:1}
+.adds{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip{font-size:12px;padding:3px 8px;border-radius:99px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.row[data-type="pts"] .only-line,.row:not([data-type="pts"]) .only-pts{display:none}
+.fold{padding:3px 8px;line-height:1.2;font-size:14px}
+.dot,.dot:hover{width:26px;height:26px;padding:0;border-radius:50%;border:3px solid var(--c);background:var(--c);box-shadow:0 0 0 1px var(--mute);flex:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.dot.off{background:transparent}
+#cmenu{position:fixed;z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:grid;gap:8px;width:196px}#cmenu .pal{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}#cmenu .pal button{width:28px;height:28px;border-radius:50%;padding:0;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--mute)}#cmenu label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}
+.row.folded{padding:6px 10px}.row.folded details,.row.folded .kind{display:none}.row.folded[data-type="bad"] .kind{display:block}
+.wrap{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.wrap.dragging{cursor:grabbing}
+.pv{font-size:16px;padding:2px 6px;white-space:nowrap;overflow-x:auto;color:var(--ink)}
+.pv::before{content:"Preview  ";font-size:12px;color:var(--mute)}
+.pv sup{font-size:.7em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.92em}
+.fr>span{padding:0 4px}.fr>span:first-child{border-bottom:1.5px solid currentColor}
+.sec h2{cursor:pointer;user-select:none;margin:14px 0 8px}
+.sec.closed h2{margin-bottom:0}
+.chev{margin-left:auto;color:var(--mute);transition:transform .15s}
+.sec.closed .chev{transform:rotate(-90deg)}
+.sec.closed .sb{display:none}
+.rad{display:inline-block;white-space:nowrap}.rs{font-size:1.05em}.rb{display:inline-block;border-top:1.5px solid currentColor;padding:1px 2px 0;margin-left:-1px}
+.bar.proj{padding-bottom:10px;border-bottom:1px solid var(--line)}
+.bar.proj button,.bar.proj select{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.bar.proj button:disabled{opacity:.4;cursor:default}
+.row.hov{outline:2px solid var(--accent);outline-offset:1px}
+.row.flash{animation:fl 1.2s}
+@keyframes fl{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 4px var(--accent)}}
+@media(prefers-reduced-motion:reduce){.row.flash{animation:none;box-shadow:0 0 0 3px var(--accent)}}
 </style>
-<script defer src="https://cdn.jsdelivr.net/npm/mathlive/dist/mathlive.min.js"></script>
-<script>window.MathJax={startup:{typeset:false},svg:{fontCache:'none'}}</script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
-</head><body>
-<header><h1>ONG Google Docs and LaTeX Equation Builder</h1>
-<p>Click a template, then click the boxes in the equation and type your numbers. No LaTeX knowledge needed. Press <b>Tab</b> to jump to the next box.</p></header>
-<main>
-<section class="card"><h2>Your equation</h2>
-<math-field id="mf" math-virtual-keyboard-policy="manual"></math-field>
-<div class="bar" style="margin:6px 0 8px"><button id="un">↶ Undo</button><button id="re">↷ Redo</button><button id="ar2" title="Click inside the braces of a piecewise function or matrix first">+ Add row</button><button id="cl" style="margin-left:auto">Clear</button></div>
-<div class="hint">Click a template, then click a box in the equation and type. Press Tab to jump to the next box. Use the keyboard icon for a symbol keypad.</div>
-<div class="hint" style="margin-top:10px">Preview (this is what gets copied)</div>
-<div id="pv" style="margin-top:0"></div>
-<h2 style="margin-top:14px">Copy to Google Docs</h2>
-<div class="bar"><button class="p" id="cI">Copy as image</button><button id="cD" title="Text for Google Docs' own equation editor (tables for piecewise and matrices)">Copy for Docs equation</button><button id="cL">Copy LaTeX</button><button id="dP">Download PNG</button></div>
-<div class="bar" style="margin-top:8px"><label>Wrap text in <select id="dl"><option value="1" selected>$ … $</option><option value="2">$$ … $$</option><option value="0">no wrapper</option></select></label>
-<label>Docs table cells <select id="cm"><option value="plain">plain math text</option><option value="docs">Docs equation commands</option></select></label>
-<label>Image size <select id="sc"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option></select></label></div>
-<details><summary>LaTeX code (advanced)</summary><textarea id="ed" spellcheck="false" placeholder="LaTeX appears here. You can also type or paste LaTeX."></textarea>
-<div class="hint" style="margin-top:8px">Google Docs equation text (what “Copy for Docs equation” copies)</div><textarea id="dt" spellcheck="false" style="min-height:60px"></textarea></details>
-<details><summary>Getting it into Google Docs</summary><ul>
-<li><b>Copy as image</b>, click in your Doc, paste (Ctrl/Cmd+V). Works for everything, including piecewise functions, systems and matrices. Resize in Docs if needed.</li>
-<li><b>Editable Docs equation:</b> click <b>Copy for Docs equation</b>, then paste it into your Doc (it is wrapped in $ … $ by default; change “Wrap text in” if you prefer another form), or paste it into Insert → Equation without the $ wrapper. Docs converts commands such as <code>\frac</code>, <code>\sqrt</code>, <code>\theta</code> and <code>\choose</code> when you press space after them. If pasted commands stay as plain text, click right after each command and press space.</li>
-<li><b>Piecewise, systems and matrices:</b> Docs equations can’t draw these, so <b>Copy for Docs equation</b> copies them as a borderless <b>table</b> instead: a large brace or bracket beside one row per piece. Paste it straight into your Doc. Cells hold plain math text (x², √x, ≤) you can edit, or choose “Docs equation commands” to get text you can turn into Docs equations cell by cell (type Insert → Equation inside the cell). If borders show up, select the table and set the border width to 0.</li>
-<li>If the image button is blocked by your browser, use <b>Download PNG</b> and insert it via Insert → Image.</li></ul></details>
-</section>
-<section class="card"><h2>Templates</h2><div id="tabs"></div><div id="grid"></div><div id="bx" hidden></div></section>
-</main><div id="toast"></div>
+</head>
+<body>
+<div class="app">
+<aside id="panel">
+  <h1>Coordinate grid</h1>
+  <p class="sub">Add lines or points, label them, then set up the axes and grid. The graph updates as you type.</p>
+
+  <section class="sec"><h2><span class="n">1</span>Lines and points<span class="chev" aria-hidden="true">▾</span></h2><div class="sb">
+  <p class="hint">Type an equation or a point. Use ^ for powers (x^2 appears as x&sup2;). Click a row’s colored circle to show or hide it. Press and hold it to change the color.</p>
+  <div id="rows"></div>
+  <div class="adds">
+    <button type="button" id="add" class="primary">+ Add row</button>
+    <button type="button" id="foldall">Collapse all</button>
+    <span class="hint">Quick add:</span>
+    <button type="button" class="chip" data-ex="y = 2x + 1">y = 2x + 1</button>
+    <button type="button" class="chip" data-ex="x = 4">x = 4</button>
+    <button type="button" class="chip" data-ex="y = x&sup2;">y = x&sup2;</button>
+    <button type="button" class="chip" data-ex="A(2, 3)">A(2, 3)</button>
+  </div>
+
+  </div></section>
+<section class="sec"><h2><span class="n">2</span>Axes<span class="chev" aria-hidden="true">▾</span></h2><div class="sb">
+  <h3>Horizontal axis (x)</h3>
+  <div class="grid3">
+    <label>From<input id="x0" value="-10"></label>
+    <label>To<input id="x1" value="10"></label>
+    <label>Step<input id="xs" value="1"></label>
+    <label>Show numbers<select id="xn"><option value="1">Every line</option><option value="2">Every 2nd</option><option value="5">Every 5th</option><option value="10">Every 10th</option><option value="0">None</option></select></label>
+    <label>Axis name<input id="xl" value="x"></label>
+  </div>
+  <h3>Vertical axis (y)</h3>
+  <div class="grid3">
+    <label>From<input id="y0" value="-10"></label>
+    <label>To<input id="y1" value="10"></label>
+    <label>Step<input id="ys" value="1"></label>
+    <label>Show numbers<select id="yn"><option value="1">Every line</option><option value="2">Every 2nd</option><option value="5">Every 5th</option><option value="10">Every 10th</option><option value="0">None</option></select></label>
+    <label>Axis name<input id="yl" value="y"></label>
+  </div>
+  <p class="hint">Step is the distance between gridlines. Ranges accept fractions and pi, like pi/2.</p>
+
+  </div></section>
+<section class="sec"><h2><span class="n">3</span>Grid<span class="chev" aria-hidden="true">▾</span></h2><div class="sb">
+  <div class="grid3">
+    <label>Color<select id="gw"><option value="light">Light</option><option value="standard" selected>Medium</option><option value="bold">Dark</option><option value="none">Hide grid</option></select></label>
+    <label>Thickness<input id="gt" type="range" min="0.5" max="4" step="0.25" value="1"></label>
+    <label>Minor lines<select id="gm"><option value="1">None</option><option value="2">2 per block</option><option value="4">4 per block</option><option value="5">5 per block</option></select></label>
+    <label>Block size<input id="cell" type="range" min="16" max="60" value="28"></label>
+  </div>
+
+  </div></section>
+<section class="sec"><h2><span class="n">4</span>Titles and text<span class="chev" aria-hidden="true">▾</span></h2><div class="sb">
+  <div class="f">
+    <label>Chart title<input id="ct" placeholder="Optional"></label>
+    <label>Horizontal axis title<input id="xt" placeholder="Optional"></label>
+    <label>Vertical axis title<input id="yt" placeholder="Optional"></label>
+    <label>Label text size<input id="ls" type="range" min="11" max="26" value="15"></label>
+  </div>
+</div></section>
+</aside>
+
+<main class="stage">
+  <div class="bar proj">
+    <button type="button" id="undo" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
+    <button type="button" id="redo" title="Redo (Ctrl+Shift+Z)" disabled>↷ Redo</button>
+    <select id="tpl" aria-label="Start from a template"><option value="">Template…</option><option value="4q">Four quadrants (−10 to 10)</option><option value="q1">First quadrant (0 to 10)</option><option value="q1b">First quadrant (0 to 20, step 2)</option><option value="s5">Small grid (−5 to 5)</option><option value="blank">Clear everything</option></select>
+    <button type="button" id="sf" title="Download your setup as a file">Save file</button>
+    <button type="button" id="of" title="Open a saved setup file">Open file</button>
+    <input type="file" id="openf" accept=".json,application/json" hidden>
+  </div>
+  <div class="bar">
+    <button type="button" id="dsvg">Save SVG</button>
+    <button type="button" id="dpng">Save PNG</button>
+    <button type="button" id="cpy">Copy image</button>
+    <button type="button" id="prt">Print</button>
+    <button type="button" id="rv" title="Back to x and y from −10 to 10">Reset view</button>
+  </div>
+  <div class="wrap"><svg id="fig"></svg></div>
+  <p class="hint" style="margin-top:8px">Drag to pan. Scroll or pinch to zoom. The view snaps to the grid when you let go. Drag a label to move it (double-click it to reset). Click a line or point to edit its row. Your work is saved automatically in this browser.</p>
+  <div id="note" role="status"></div>
+</main>
+</div>
+
 <script>
-const RAW=String.raw`#Basics
-\frac{\square}{\square}
-\square^{\square}
-\square_{\square}
-\sqrt{\square}
-\sqrt[\square]{\square}
-\left|\square\right|
-\left(\square\right)
-\left[\square,\ \square\right)
-(-\infty,\infty)
-\{x\in\mathbb{R}\mid\square\}
-\square^2
-\square^{-1}
-\left\{\square\right\}
-\left\lfloor\square\right\rfloor
-\overline{\square}
-#Symbols
-\alpha ;; alpha
-\beta ;; beta
-\gamma ;; gamma
-\delta ;; delta
-\epsilon ;; epsilon
-\theta ;; theta
-\lambda ;; lambda
-\mu ;; mu
-\pi ;; pi
-\rho ;; rho
-\sigma ;; sigma
-\tau ;; tau
-\phi ;; phi
-\omega ;; omega
-\Delta ;; Delta
-\Sigma ;; Sigma
-\Theta ;; Theta
-\Pi ;; Pi
-\Phi ;; Phi
-\Omega ;; Omega
-\pm ;; plus or minus
-\mp ;; mp
-\times ;; times
-\div ;; div
-\cdot ;; cdot
-\circ ;; circ
-\infty ;; infinity
-\prime ;; prime (derivative)
-\ldots ;; ldots
-\cdots ;; cdots
-\% ;; percent
-< ;; <
-> ;; >
-\le ;; less than or equal
-\ge ;; greater than or equal
-\ne ;; not equal
-\approx ;; approx
-\equiv ;; equiv
-\propto ;; propto
-\cong ;; cong
-\sim ;; sim
-\in ;; in
-\notin ;; notin
-\subset ;; subset
-\subseteq ;; subseteq
-\cup ;; cup
-\cap ;; cap
-\emptyset ;; emptyset
-\mathbb{R} ;; mathbb{R}
-\mathbb{Z} ;; mathbb{Z}
-\mathbb{N} ;; mathbb{N}
-\mathbb{Q} ;; mathbb{Q}
-\therefore ;; therefore
-\because ;; because
-\Rightarrow ;; Rightarrow
-\Leftarrow ;; Leftarrow
-\Leftrightarrow ;; Leftrightarrow
-\to ;; tends to
-\leftarrow ;; leftarrow
-\leftrightarrow ;; leftrightarrow
-\forall ;; forall
-\exists ;; exists
-\neg ;; neg
-^\circ ;; degree
-\angle ;; angle
-\perp ;; perp
-\parallel ;; parallel
-\triangle ;; triangle
-\partial ;; partial
-#Functions
-f(x)=\square
-f^{-1}(x)
-(f\circ g)(x)=f(g(x))
-(f+g)(x)
-\left(\frac{f}{g}\right)(x)
-y=a\,f\!\left(k(x-d)\right)+c
-y=ax^2+bx+c
-y=a(x-h)^2+k
-y=a(x-r)(x-s)
-x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
-b^2-4ac
-f(x)=a_nx^n+a_{n-1}x^{n-1}+\cdots+a_1x+a_0
-f(a)=0
-f(x)=(x-a)\,q(x)+R
-f(x)=\frac{P(x)}{Q(x)}
-\frac{f(b)-f(a)}{b-a}
-\frac{\Delta y}{\Delta x}
-x\in(-\infty,\square)\cup(\square,\infty)
-y=\left|\square\right|
-y=\sqrt{\square}
-\text{Domain: }\{x\in\mathbb{R}\mid\square\}
-\text{Range: }\{y\in\mathbb{R}\mid\square\}
-#Piecewise
-f(x)=\begin{cases}\square, & \square \\ \square, & \square\end{cases}
-f(x)=\begin{cases}\square, & \square \\ \square, & \square \\ \square, & \square\end{cases}
-f(x)=\begin{cases}\square, & \square \\ \square, & \square \\ \square, & \square \\ \square, & \square\end{cases}
-f(x)=\begin{cases}\square, & x<\square \\ \square, & x\ge\square\end{cases}
-f(x)=\begin{cases}\square, & x<\square \\ \square, & \square\le x<\square \\ \square, & x\ge\square\end{cases}
-\begin{cases}\square, & \square \\ \square, & \square\end{cases}
-\left|x\right|=\begin{cases}x, & x\ge0 \\ -x, & x<0\end{cases}
-\text{sgn}(x)=\begin{cases}1, & x>0 \\ 0, & x=0 \\ -1, & x<0\end{cases}
-#Exp & Log
-y=a\,b^{x}
-A=A_0(1+r)^t
-A=A_0\left(\tfrac{1}{2}\right)^{\frac{t}{h}}
-y=e^{x}
-\log_{\square}\square
-\ln\square
-\log_b x=\frac{\log x}{\log b}
-\log_b(xy)=\log_b x+\log_b y
-\log_b\!\left(\frac{x}{y}\right)=\log_b x-\log_b y
-\log_b x^{n}=n\log_b x
-b^{x}=y\iff x=\log_b y
-#Trig
-\sin\theta
-\cos\theta
-\tan\theta
-\csc\theta
-\sec\theta
-\cot\theta
-\sin^{-1}\square
-\sin^2\theta+\cos^2\theta=1
-\tan\theta=\frac{\sin\theta}{\cos\theta}
-\frac{\sin A}{a}=\frac{\sin B}{b}=\frac{\sin C}{c}
-c^2=a^2+b^2-2ab\cos C
-y=a\sin\!\left(k(x-d)\right)+c
-y=a\cos\!\left(k(x-d)\right)+c
-\text{period}=\frac{2\pi}{k}
-\frac{\pi}{\square}
-\sin(A\pm B)=\sin A\cos B\pm\cos A\sin B
-\cos(A\pm B)=\cos A\cos B\mp\sin A\sin B
-\sin2\theta=2\sin\theta\cos\theta
-\cos2\theta=\cos^2\theta-\sin^2\theta
-#Sequences & Finance
-t_n=t_1+(n-1)d
-t_n=t_1r^{n-1}
-S_n=\frac{n}{2}\left(2t_1+(n-1)d\right)
-S_n=\frac{t_1(r^n-1)}{r-1}
-S_\infty=\frac{t_1}{1-r}
-t_n=t_{n-1}+\square,\ t_1=\square
-\sum_{k=1}^{n}\square
-\binom{n}{r}
-n!
-A=P(1+i)^n
-FV=R\left[\frac{(1+i)^n-1}{i}\right]
-PV=R\left[\frac{1-(1+i)^{-n}}{i}\right]
-(a+b)^n=\sum_{k=0}^{n}\binom{n}{k}a^{n-k}b^k
-#Calculus
-\lim_{x\to\square}\square
-\lim_{x\to a^{+}}f(x)
-\lim_{x\to\infty}f(x)
-f'(x)=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}
-f'(x)
-f''(x)
-\frac{dy}{dx}
-\frac{d^2y}{dx^2}
-\frac{d}{dx}\left[\square\right]
-\left.\frac{dy}{dx}\right|_{x=a}
-\frac{d}{dx}x^n=nx^{n-1}
-(fg)'=f'g+fg'
-\left(\frac{f}{g}\right)'=\frac{f'g-fg'}{g^2}
-\frac{dy}{dx}=\frac{dy}{du}\cdot\frac{du}{dx}
-\frac{d}{dx}e^{x}=e^{x}
-\frac{d}{dx}\ln x=\frac{1}{x}
-\frac{d}{dx}\sin x=\cos x
-y-y_1=m(x-x_1)
-\frac{dV}{dt}
-#Vectors
-\vec{v}
-\overrightarrow{AB}
-\left|\vec{v}\right|
-\hat{v}
-\begin{pmatrix}\square\\\square\end{pmatrix}
-\begin{pmatrix}\square\\\square\\\square\end{pmatrix}
-\vec{a}\cdot\vec{b}=\left|\vec{a}\right|\left|\vec{b}\right|\cos\theta
-\vec{a}\times\vec{b}
-\left|\vec{a}\times\vec{b}\right|=\left|\vec{a}\right|\left|\vec{b}\right|\sin\theta
-\text{proj}_{\vec{b}}\vec{a}=\left(\frac{\vec{a}\cdot\vec{b}}{\left|\vec{b}\right|^2}\right)\vec{b}
-\vec{r}=\vec{r}_0+t\vec{m},\ t\in\mathbb{R}
-(x,y,z)=(x_0,y_0,z_0)+t(a,b,c)
-\frac{x-x_0}{a}=\frac{y-y_0}{b}=\frac{z-z_0}{c}
-Ax+By+Cz+D=0
-\vec{n}\cdot(\vec{r}-\vec{r}_0)=0`;
-const CAT={};let cur;RAW.split('\n').forEach(l=>{if(l[0]==='#')CAT[cur=l.slice(1)]=[];else CAT[cur].push(l)});
-const $=id=>document.getElementById(id),ed=$('ed'),pv=$('pv'),SQ='\\square';
-const ready=()=>new Promise(r=>{const t=()=>window.MathJax&&MathJax.startup&&MathJax.startup.promise?MathJax.startup.promise.then(r):setTimeout(t,50);t()});
-async function R(l,el,d){await ready();el.replaceChildren(await MathJax.tex2svgPromise(l,{display:!!d}))}
-function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.opacity=0,1800)}
-const wrap=t=>({1:'$'+t+'$',2:'$$'+t+'$$'}[$('dl').value]||t);
-const BB={R:'ℝ',Z:'ℤ',N:'ℕ',Q:'ℚ'};
-function toDocs(s){const un=/\\begin\{/.test(s);
-for(let i=0;i<3;i++)s=s.replace(/\\binom\{([^{}]*)\}\{([^{}]*)\}/g,'$1 \\choose $2').replace(/\\(?:text|mathrm)\{([^{}]*)\}/g,'$1');
-s=s.replace(/\\mathbb\{(\w)\}/g,(m,c)=>BB[c]||c).replace(/\\(?:left|right)\.?/g,'').replace(/\\[dt]frac/g,'\\frac')
-.replace(/\\overrightarrow\{([^{}]*)\}/g,'$1\u20D7').replace(/\\vec\{([^{}]*)\}/g,'$1\u20D7').replace(/\\hat\{([^{}]*)\}/g,'$1\u0302')
-.replace(/\^\\circ|\^\{\\circ\}/g,'°').replace(/\\le(?![a-z])/g,'\\leq').replace(/\\ge(?![a-z])/g,'\\geq').replace(/\\ne(?![a-z])/g,'\\neq')
-.replace(/\\mid/g,'|').replace(/\\iff/g,'⇔').replace(/\\therefore/g,'∴').replace(/\\square/g,'□').replace(/\\[,;!]/g,'').replace(/\\ /g,' ').replace(/\\([{}])/g,'$1');
-return {t:s.replace(/\s+/g,' ').trim(),un}}
-const SU={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾',n:'ⁿ',i:'ⁱ',x:'ˣ',y:'ʸ',a:'ᵃ',t:'ᵗ',k:'ᵏ',m:'ᵐ',r:'ʳ'},SB={'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋',n:'ₙ',i:'ᵢ',x:'ₓ',a:'ₐ',e:'ₑ',o:'ₒ',m:'ₘ',k:'ₖ',t:'ₜ',r:'ᵣ'};
-const GK={theta:'θ',alpha:'α',beta:'β',pi:'π',Delta:'Δ',phi:'φ',sigma:'σ',omega:'ω',lambda:'λ',mu:'μ',infty:'∞',pm:'±',mp:'∓',cdot:'·',times:'×',leq:'≤',geq:'≥',neq:'≠',in:'∈',cup:'∪',cap:'∩',to:'→',Rightarrow:'⇒',circ:'∘',cdots:'⋯'};
-const mp=(a,M,f)=>[...a].every(c=>M[c])?[...a].map(c=>M[c]).join(''):f+'('+a+')';
-function plain(s){s=toDocs(s).t.replace(/(\S+) \\choose (\S+)/g,'C($1,$2)');
-s=s.replace(/\^\{([^{}]*)\}/g,(m,a)=>mp(a,SU,'^')).replace(/\^([A-Za-z0-9])/g,(m,a)=>mp(a,SU,'^')).replace(/_\{([^{}]*)\}/g,(m,a)=>mp(a,SB,'_')).replace(/_([A-Za-z0-9])/g,(m,a)=>mp(a,SB,'_'));
-s=s.replace(/\\sqrt\[([^\]]*)\]\{([^{}]*)\}/g,(m,n,x)=>mp(n,SU,'^')+'√('+x+')').replace(/\\sqrt\{([^{}]*)\}/g,(m,x)=>/^\w+$/.test(x)?'√'+x:'√('+x+')');
-s=s.replace(/\\([A-Za-z]+)/g,(m,c)=>c==='frac'?m:GK[c]||c);
-for(let i=0;i<3;i++)s=s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,(m,a,b,o,str)=>{const ok=t=>/^(\d+\.?\d*|[A-Za-z])$/.test(t),r=(ok(a)?a:'('+a+')')+'/'+(ok(b)?b:'('+b+')');return /^[\w(√]/.test(str.slice(o+m.length))||(o>0&&/[\w)]$/.test(str.slice(0,o)))?'('+r+')':r});
-return s.replace(/[{}]/g,'').replace(/\s+/g,' ').trim()}
-function tbl(v){const m=v.match(/^([\s\S]*?)\\begin\{(cases|pmatrix|bmatrix|vmatrix)\}([\s\S]*)\\end\{\2\}([\s\S]*)$/);if(!m||/\\begin/.test(m[3]))return null;
-const f=s=>$('cm').value==='docs'?toDocs(s).t:plain(s),e=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),
-rows=m[3].split(/\\\\/).map(r=>r.split('&').map(c=>f(c.trim()))).filter(r=>r.some(c=>c)),n=rows.length;if(!n)return null;
-const BR={cases:['{',''],pmatrix:['(',')'],bmatrix:['[',']'],vmatrix:['|','|']}[m[2]],rs=` rowspan="${n}"`,w=Math.max(...rows.map(r=>r[0]===undefined?0:r.length));
-const W=a=>Math.max(30,Math.round(Math.max(0,...a.map(t=>t.length))*8.5+26)),big=`font-size:${Math.max(n,1)*22}px;`,cases=m[2]==='cases',pre=f(m[1].trim()),post=f(m[4].trim());
-const wp=W([pre]),wq=W([post]),wb=Math.max(36,n*14),we=W(rows.map(r=>r[0]||'')),wc=W(rows.map(r=>r[1]||'')),wm=Array.from({length:w},(_,j)=>W(rows.map(r=>r[j]||'')));
-const cs=(t,x,st,wd)=>`<td${x||''} width="${wd}" style="border:0;padding:2px 8px;vertical-align:middle;white-space:nowrap;width:${wd}px;min-width:${wd}px;${st||''}">${e(t)}</td>`;
-const cols=[...(pre?[wp]:[]),wb,...(cases?[we,wc]:wm),...(BR[1]?[wb]:[]),...(post?[wq]:[])];
-const html=`<table style="border-collapse:collapse;border:0;table-layout:fixed;width:${cols.reduce((x,y)=>x+y,0)}px"><colgroup>${cols.map(c=>`<col width="${c}" style="width:${c}px">`).join('')}</colgroup>`+rows.map((r,i)=>'<tr>'+(i?'':(pre?cs(pre,rs,'',wp):'')+cs(BR[0],rs,big,wb))+
-(cases?cs(r[0]||'',0,'',we)+cs(r[1]||'',0,'',wc):wm.map((wd,j)=>cs(r[j]||'',0,'text-align:center',wd)).join(''))+(i?'':(BR[1]?cs(BR[1],rs,big,wb):'')+(post?cs(post,rs,'',wq):''))+'</tr>').join('')+'</table>';
-return{html,text:(pre?pre+' ':'')+rows.map(r=>r.join('\t')).join('\n')+(post?' '+post:'')}}
-$('cD').onclick=async()=>{const v=ed.value.trim();if(!v)return;try{const t=tbl(v);if(t){await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([t.html],{type:'text/html'}),'text/plain':new Blob([t.text],{type:'text/plain'})})]);toast('Copied as a table. Paste it into your Doc');return}
-const d=toDocs(v);await navigator.clipboard.writeText(wrap(d.t));toast(d.un?'Copied, but Docs equations can’t do this layout: use Copy as image':'Copied. Paste into Insert → Equation')}catch(e){toast('Copy blocked: copy from the Docs equation text box')}};
-function upd(){try{localStorage.setItem('latexDraft',ed.value)}catch(e){}$('dt').value=toDocs(ed.value).t;return R(ed.value||'\\text{\\color{gray}preview}',pv,true)}
-const mf=$('mf'),toPh=s=>s.replace(/\\square/g,'\\placeholder{}'),fromPh=s=>s.replace(/\\placeholder(\[[^\]]*\])?\{[^}]*\}/g,'\\square');
-function sync(){ed.value=fromPh(mf.getValue('latex'));upd()}
-function ins(t){if(!mf.insert){toast('Editor still loading, try again');return}mf.focus();mf.insert(toPh(t),{format:'latex',selectionMode:'placeholder'});sync()}
-customElements.whenDefined('math-field').then(()=>{try{MathfieldElement.soundsDirectory=null}catch(e){}mf.value=toPh(ed.value);mf.addEventListener('input',sync)});
-$('un').onclick=()=>{if(mf.executeCommand){mf.executeCommand('undo');mf.focus();sync()}};
-$('re').onclick=()=>{if(mf.executeCommand){mf.executeCommand('redo');mf.focus();sync()}};
-$('ar2').onclick=()=>{if(mf.executeCommand){mf.focus();mf.executeCommand('addRowAfter');sync()}};
-ed.oninput=()=>{if(mf.setValue)mf.value=toPh(ed.value);upd()};
-ed.onkeydown=e=>{if(e.key==='Tab'&&!e.shiftKey){let i=ed.value.indexOf(SQ,ed.selectionEnd);if(i<0)i=ed.value.indexOf(SQ);if(i>=0){e.preventDefault();ed.setSelectionRange(i,i+SQ.length)}}};
-$('cl').onclick=()=>{ed.value='';if(mf.setValue)mf.value='';upd();if(mf.focus)mf.focus()};
-$('cL').onclick=async()=>{const v=ed.value.trim();if(!v)return;try{await navigator.clipboard.writeText(wrap(v));toast('LaTeX copied')}catch(e){toast('Copy blocked: select the text and copy manually')}};
-async function blob(){await upd();const svg=pv.querySelector('svg');if(!svg||pv.querySelector('[data-mjx-error]'))throw 0;const r=svg.getBoundingClientRect(),s=+$('sc').value,p=8*s,w=r.width*s,h=r.height*s;
-const c=svg.cloneNode(true);c.setAttribute('width',w);c.setAttribute('height',h);
-const x=new XMLSerializer().serializeToString(c).replace(/currentColor/g,'#000');
-const im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x)});
-const cv=document.createElement('canvas');cv.width=w+2*p;cv.height=h+2*p;const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,p,p,w,h);
-return new Promise(ok=>cv.toBlob(ok,'image/png'))}
-$('cI').onclick=async()=>{if(!ed.value.trim())return;try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob()})]);toast('Image copied. Paste it into your Doc')}catch(e){toast('Image copy blocked: use Download PNG')}};
-$('dP').onclick=async()=>{if(!ed.value.trim())return;try{const b=await blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='equation.png';a.click()}catch(e){toast('Could not render. Check the LaTeX')}};
-/* palette */
-const tabs=$('tabs'),grid=$('grid'),bx=$('bx');
-function show(n){[...tabs.children].forEach(b=>b.classList.toggle('on',b.textContent===n));const B=n==='Builders';grid.hidden=B;bx.hidden=!B;
-if(B){build(bx.dataset.k||'piecewise');return}
-grid.replaceChildren();grid.classList.toggle('wide',n==='Piecewise');grid.classList.toggle('sym',n==='Symbols');CAT[n].forEach(x=>{const [l,nm]=x.split(' ;; '),b=document.createElement('button');b.title=nm||l;b.onclick=()=>ins(l);grid.append(b);R(l,b).then(()=>fit(b))})}
-function fit(b){const s=b.querySelector('svg');if(!s)return;const r=s.getBoundingClientRect(),k=Math.min(1,(b.clientWidth-16)/r.width,96/r.height);if(k<1){s.setAttribute('width',r.width*k+'px');s.setAttribute('height',r.height*k+'px')}}
-[...Object.keys(CAT),'Builders'].forEach(n=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>show(n);tabs.append(b)});
-/* builders */
-const fx=s=>s.replace(/<=/g,'\\le ').replace(/>=/g,'\\ge ').replace(/!=/g,'\\ne ');
-const KINDS={piecewise:'Piecewise function',system:'System of equations',working:'Aligned working',matrix:'Matrix / column vector'};
-const PRE={piecewise:[['x^2','x<0'],['2x+1','x>=0']],system:[['2x+y=5'],['x-y=1']],working:[['3(x+2)=15'],['3x+6=15'],['3x=9'],['x=3']]};
-function gen(){const k=bx.dataset.k;
-if(k==='matrix'){const g=[...bx.querySelectorAll('.mg input')],c=+$('mc').value;if(!g.some(i=>i.value))return'';const rows=[];for(let i=0;i<g.length;i+=c)rows.push(g.slice(i,i+c).map(x=>fx(x.value)||'\\square').join(' & '));return`\\begin{${$('mt').value}}${rows.join(' \\\\ ')}\\end{${$('mt').value}}`}
-const rows=[...bx.querySelectorAll('.row')].map(r=>[...r.querySelectorAll('input')].map(i=>fx(i.value.trim()))).filter(r=>r[0]);if(!rows.length)return'';
-if(k==='piecewise')return`${$('fn').value||'f(x)'}=\\begin{cases}${rows.map(r=>r[0]+(r[1]?', & '+r[1]:'')).join(' \\\\ ')}\\end{cases}`;
-if(k==='system')return`\\begin{cases}${rows.map(r=>r[0]).join(' \\\\ ')}\\end{cases}`;
-return`\\begin{aligned}${rows.map(r=>/&/.test(r[0])?r[0]:r[0].replace(/(=|\\le |\\ge |<|>)/,'&$1')).join(' \\\\ ')}\\end{aligned}`}
-function prev(){R(gen()||'\\text{\\color{gray}preview}',$('bpv'))}
-function addRow(v){const k=bx.dataset.k,d=document.createElement('div');d.className='row';
-d.innerHTML=(k==='piecewise'?'<input placeholder="expression, e.g. x^2"><input placeholder="condition, e.g. x<0">':'<input placeholder="'+(k==='system'?'equation, e.g. 2x+y=5':'a line of working')+'">')+'<button title="Remove row">✕</button>';
-(v||[]).forEach((x,i)=>d.children[i].value=x);d.oninput=prev;d.lastChild.onclick=()=>{d.remove();prev()};$('rows').append(d)}
-function grid2(){const r=+$('mr').value,c=+$('mc').value,m=$('mgrid');m.style.gridTemplateColumns=`repeat(${c},minmax(0,70px))`;m.replaceChildren();for(let i=0;i<r*c;i++){const x=document.createElement('input');x.oninput=prev;m.append(x)}prev()}
-function build(k){bx.dataset.k=k;const m=k==='matrix';
-bx.innerHTML=`<div class="bar" style="margin-bottom:8px"><select id="ks">${Object.entries(KINDS).map(([a,b])=>`<option value="${a}"${a===k?' selected':''}>${b}</option>`).join('')}</select>`+
-(k==='piecewise'?'<label>Name <input id="fn" value="f(x)" size="7"></label>':'')+
-(m?'<label>Rows <select id="mr">'+[1,2,3,4,5].map(n=>`<option${n===3?' selected':''}>${n}</option>`).join('')+'</select></label><label>Columns <select id="mc">'+[1,2,3,4,5].map(n=>`<option>${n}</option>`).join('')+'</select></label><select id="mt"><option value="pmatrix">( )</option><option value="bmatrix">[ ]</option><option value="vmatrix">| |</option></select>':'')+
-`</div><div class="hint">${m?'Fill the grid. Use 1 column for a vector.':k==='working'?'One step per row. Equals signs are aligned automatically.':'Type LaTeX or shortcuts: &lt;= &gt;= != are converted for you.'}</div>`+
-(m?'<div class="mg" id="mgrid"></div>':'<div id="rows"></div><button id="ar">+ Add row</button>')+
-'<div id="bpv"></div><button class="p" id="bi">Insert into equation</button>';
-$('ks').onchange=e=>build(e.target.value);$('bi').onclick=()=>{const g=gen();if(g)ins(g)};
-if(m){$('mr').onchange=$('mc').onchange=grid2;$('mt').onchange=prev;grid2()}else{if($('fn'))$('fn').oninput=prev;$('ar').onclick=()=>addRow();PRE[k].forEach(addRow);prev()}}
-try{ed.value=localStorage.getItem('latexDraft')||''}catch(e){}
-show('Basics');upd();
-</script></body></html>
+const $=s=>document.querySelector(s);
+let live=null,view=null;
+var hist=[],hi=-1,lastJ='',hT=null;
+const ticks=(a,b,st)=>{const o=[];for(let k=Math.ceil(a/st-1e-9);k*st<=b+1e-9;k++)o.push([k,k*st]);return o};
+const cvx=document.createElement('canvas').getContext('2d');
+const tw=(t,sz)=>{cvx.font='bold '+sz+'px Helvetica,Arial,sans-serif';return cvx.measureText(t).width};
+const SUPRE=/\^(?:\(([^)]*)\)|(-?\d*\.?\d+|-?[a-z]))/gi;
+const wsup=(t,sz)=>{let w=0,last=0,m;SUPRE.lastIndex=0;while((m=SUPRE.exec(t))){w+=tw(t.slice(last,m.index),sz)+tw(m[1]!==undefined?m[1]:m[2],sz*.7);last=SUPRE.lastIndex}return w+tw(t.slice(last),sz)};
+const FC='A-Za-z0-9.^\u00b2\u00b3\u00b9\u2070-\u2079\u207b\u02e3\u02b8\uE000-\uE0FF';
+const FRRE=new RegExp('(\\([^()]*\\)|['+FC+']+)/(\\([^()]*\\)|['+FC+']+)','g');
+const unp=t=>/^\(.*\)$/.test(t)?t.slice(1,-1):t;
+const NOUT=0xE000;
+function extract(str){const rads=[];let o='',i=0;
+  while(i<str.length){let k=-1;if(str.startsWith('sqrt(',i))k=i+4;else if(str[i]=='\u221a'&&str[i+1]=='(')k=i+1;
+    if(k<0){o+=str[i++];continue}
+    let d=0,j=k;for(;j<str.length;j++){if(str[j]=='(')d++;else if(str[j]==')'&&--d==0)break}
+    if(j>=str.length){o+=str[i++];continue}
+    rads.push(str.slice(k+1,j));o+=String.fromCharCode(NOUT+rads.length-1);i=j+1}
+  return{s:o,rads}}
+function lay(str,sz,halo,rads){
+  const col=(halo.match(/fill="([^"]+)"/)||[])[1]||'#000';
+  let x=0,o='',up=sz*.8,down=sz*.22,fr=false;
+  const put=(L,dy)=>{o+=`<g transform="translate(${x.toFixed(1)} ${dy.toFixed(1)})">${L.svg}</g>`;x+=L.w;up=Math.max(up,L.up-dy);down=Math.max(down,L.down+dy);fr=fr||L.fr};
+  const txt=t=>{if(!t)return;put({svg:`<text x="0" y="0" xml:space="preserve" style="white-space:pre" font-size="${sz}" font-weight="bold" ${halo}>${sup(t,sz)}</text>`,w:wsup(t,sz),up:sz*.8,down:sz*.22,fr:false},0)};
+  const rad=inner=>{const I=layout(inner,sz,halo),sw=sz*.55,top=-(I.up+3),end=(sw+I.w+2).toFixed(1);
+    const d=`M0 ${(-.28*sz).toFixed(1)} L${(.09*sz).toFixed(1)} ${(-.34*sz).toFixed(1)} L${(.26*sz).toFixed(1)} ${(.1*sz).toFixed(1)} L${(.5*sz).toFixed(1)} ${top.toFixed(1)} H${end}`;
+    put({svg:`<path d="${d}" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round"/><g transform="translate(${sw.toFixed(1)} 0)">${I.svg}</g>`,w:sw+I.w+3,up:I.up+5,down:Math.max(I.down,sz*.14),fr:I.fr},0)};
+  const inline=t=>{let last=0;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);if(c>=NOUT&&c<NOUT+256){txt(t.slice(last,i));rad(rads[c-NOUT]);last=i+1}}txt(t.slice(last))};
+  const re=new RegExp(FRRE.source,'g');let last=0,m;
+  while((m=re.exec(str))){inline(str.slice(last,m.index));last=re.lastIndex;
+    const fs=sz*.82,N=lay(unp(m[1]),fs,halo,rads),D=lay(unp(m[2]),fs,halo,rads),fw=Math.max(N.w,D.w)+6,yb=-sz*.3,yN=yb-3-N.down,yD=yb+2+D.up,x2=x+fw;
+    o+=`<line x1="${x.toFixed(1)}" y1="${yb.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${yb.toFixed(1)}" stroke="#fff" stroke-width="4.5"/><line x1="${x.toFixed(1)}" y1="${yb.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${yb.toFixed(1)}" stroke="${col}" stroke-width="1.6"/>`
+      +`<g transform="translate(${(x+(fw-N.w)/2).toFixed(1)} ${yN.toFixed(1)})">${N.svg}</g><g transform="translate(${(x+(fw-D.w)/2).toFixed(1)} ${yD.toFixed(1)})">${D.svg}</g>`;
+    up=Math.max(up,N.up-yN);down=Math.max(down,yD+D.down);fr=true;x+=fw+3}
+  inline(str.slice(last));return{svg:o,w:x,up,down,fr}}
+function layout(str,sz,halo){const e=extract(str);return lay(e.s,sz,halo,e.rads)}
+function lab(str,sz,halo,tf,dx,dy,an,i,k){const r=layout(str,sz,halo),o=(rows[i]&&rows[i].off&&rows[i].off[k])||[0,0];
+  if(dy<=-8)dy-=Math.max(0,r.down-sz*.25);else if(dy>=sz)dy=Math.max(dy,r.up+5);
+  const ox=an=='middle'?-r.w/2:an=='end'?-r.w:0;
+  return `<g class="lbl" data-i="${i}" data-k="${k}" style="cursor:move" transform="translate(${o[0].toFixed(1)} ${o[1].toFixed(1)})"><g transform="${tf}"><g transform="translate(${(dx+ox).toFixed(1)} ${dy.toFixed(1)})">${r.svg}</g></g></g>`}
+const hsup=t=>esc(t).replace(/\^\(([^)]*)\)|\^(-?\d*\.?\d+|-?[a-z])/gi,(m,a,b)=>'<sup>'+(a!==undefined?a:b).replace(/-/g,'\u2212')+'</sup>');
+function mathHTML(str){const e=extract(str),re=new RegExp(FRRE.source,'g'),src=e.s;let o='',last=0,m;
+  const ph=t=>hsup(t).replace(/[\uE000-\uE0FF]/g,c=>`<span class="rad"><span class="rs">\u221a</span><span class="rb">${mathHTML(e.rads[c.charCodeAt(0)-NOUT])}</span></span>`);
+  while((m=re.exec(src))){o+=ph(src.slice(last,m.index))+`<span class="fr"><span>${ph(unp(m[1]))}</span><span>${ph(unp(m[2]))}</span></span>`;last=re.lastIndex}
+  return o+ph(src.slice(last))}
+function pvUpdate(d,i){d.querySelectorAll('.pv').forEach(el=>{const t=String(rows[i][el.dataset.pv]||''),h=/\/|sqrt\(|\u221a\(/.test(t)?mathHTML(t):'';el.innerHTML=h;el.hidden=!h})}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>{n=+n.toFixed(6);if(Object.is(n,-0))n=0;return(n<0?'\u2212':'')+Math.abs(n)};
+const sup=(s,sz)=>{const d=(sz*.4).toFixed(1),re=/\^(?:\(([^)]*)\)|(-?\d*\.?\d+|-?[a-z]))/gi;let o='',n=0,last=0,m;while((m=re.exec(s))){o+=esc(s.slice(last,m.index))+`<tspan dy="-${d}" font-size="${(sz*.7).toFixed(1)}">${esc((m[1]!==undefined?m[1]:m[2]).replace(/-/g,'−'))}</tspan><tspan dy="${d}">`;n++;last=re.lastIndex}return o+esc(s.slice(last))+'</tspan>'.repeat(n)};
+const SUPD='⁰¹²³⁴⁵⁶⁷⁸⁹',unsupCh=c=>c=='⁻'?'-':c=='ˣ'?'x':c=='ʸ'?'y':String(SUPD.indexOf(c));
+const unsup=s=>s.replace(/⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+|ˣ|ʸ/g,m=>'^'+[...m].map(unsupCh).join(''));
+const supify=(el,e)=>{if(el.tagName!='INPUT'||el.type!='text')return;const c=el.selectionStart,o=el.value.slice(0,c);let h=o;
+  if(e&&/^[0-9]$/.test(e.data||''))h=h.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹])([0-9])$/,(m,a,b)=>a+SUPD[b]);
+  h=h.replace(/(⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+)\.$/,(m,z)=>unsup(z)+'.');
+  h=h.replace(/\^(-?)(\d+)(?![\d.])|\^([xy])(?![a-z])/g,(m,n,d,l)=>d?(n?'⁻':'')+[...d].map(z=>SUPD[z]).join(''):l=='x'?'ˣ':'ʸ');
+  if(h!==o){el.value=h+el.value.slice(c);el.setSelectionRange(h.length,h.length)}};
+const FN={sin:Math.sin,cos:Math.cos,tan:Math.tan,sec:x=>1/Math.cos(x),csc:x=>1/Math.sin(x),cot:x=>1/Math.tan(x),arcsin:Math.asin,arccos:Math.acos,arctan:Math.atan,ln:Math.log,log:Math.log10,sqrt:Math.sqrt,abs:Math.abs};
+const NAMES=['arcsin','arccos','arctan','sqrt','sin','cos','tan','sec','csc','cot','abs','ln','log','pi','x','y','e'];
+
+function compile(src){
+  const t=unsup(src).replace(/[\u2212\u2013]/g,'-').replace(/\u03c0/g,'pi').replace(/\s+/g,'').toLowerCase().replace(/\*\*/g,'^');
+  let i=0,abs=0;const pk=()=>t[i];
+  const expr=()=>{let v=term();while(pk()=='+'||pk()=='-'){const o=t[i++],l=v,r=term();v=o=='+'?(x,y)=>l(x,y)+r(x,y):(x,y)=>l(x,y)-r(x,y)}return v};
+  const term=()=>{let v=unary();while(i<t.length&&(pk()=='*'||pk()=='/'||/[0-9.a-z(]/.test(pk())||(pk()=='|'&&!abs))){let o='*';if(pk()=='*'||pk()=='/')o=t[i++];const l=v,r=unary();v=o=='*'?(x,y)=>l(x,y)*r(x,y):(x,y)=>l(x,y)/r(x,y)}return v};
+  const unary=()=>{if(pk()=='-'){i++;const f=unary();return(x,y)=>-f(x,y)}if(pk()=='+'){i++;return unary()}return power()};
+  const power=()=>{const b=prim();if(pk()=='^'){i++;const e=unary();return(x,y)=>Math.pow(b(x,y),e(x,y))}return b};
+  const prim=()=>{
+    const rest=t.slice(i);let m=rest.match(/^\d*\.?\d+/);
+    if(m){i+=m[0].length;const n=+m[0];return()=>n}
+    if(pk()=='('){i++;const v=expr();if(pk()!=')')throw 0;i++;return v}
+    if(pk()=='|'){i++;abs++;const v=expr();if(pk()!='|')throw 0;i++;abs--;return(x,y)=>Math.abs(v(x,y))}
+    m=rest.match(/^log_(\d*\.?\d+)/);
+    if(m){i+=m[0].length;const b=Math.log(+m[1]),a=pk()=='('?prim():power();return(x,y)=>Math.log(a(x,y))/b}
+    const nm=NAMES.find(n=>rest.startsWith(n));if(!nm)throw 0;i+=nm.length;
+    if(FN[nm]){const f=FN[nm],a=pk()=='('?prim():power();return(x,y)=>f(a(x,y))}
+    if(nm=='x')return x=>x;if(nm=='y')return(x,y)=>y;
+    const c=nm=='pi'?Math.PI:Math.E;return()=>c};
+  const f=expr();if(i<t.length)throw 0;return f}
+
+function parseRow(s){
+  s=s.replace(/[\u2212\u2013]/g,'-').trim();if(!s)return null;
+  const pre=/([A-Za-z]'*)?\s*\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)/g;
+  const pts=[...s.matchAll(pre)];
+  if(pts.length&&s.replace(pre,'').replace(/[\s,]/g,'')==='')return{type:'pts',pts:pts.map(m=>({n:m[1]||'',x:+m[2],y:+m[3]}))};
+  const parts=s.split('=');if(parts.length>2)throw 0;
+  let g;
+  if(parts.length==1){const f=compile(parts[0]);g=(x,y)=>y-f(x,y)}
+  else{const a=compile(parts[0]),b=compile(parts[1]);g=(x,y)=>a(x,y)-b(x,y)}
+  const dy=g(.5,1)-g(.5,0);if(!isFinite(dy))throw 0;
+  if(Math.abs((g(.5,2)-g(.5,1))-dy)>1e-9*Math.max(1,Math.abs(dy)))throw 0;
+  if(dy===0){const a=g(0,0),b=g(1,0)-a;if(!isFinite(a)||!b)throw 0;return{type:'v',c:-a/b}}
+  return{type:'f',f:x=>{const a=g(x,0);return -a/(g(x,1)-a)}}}
+
+const COLORS=['#000000'];
+let rows=[{eq:'y = 2x + 1',color:COLORS[0],dash:'solid',w:'2.5',lab:'y = 2x + 1',pos:78,place:'above',rot:true,coords:false,arr:'both',vis:true,labOn:true}];
+const sel=(o,v)=>o.map(([a,b])=>`<option value="${a}"${a==v?' selected':''}>${b}</option>`).join('');
+
+function renderRows(){
+  const box=$('#rows');box.innerHTML='';
+  rows.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='row'+(r.folded?' folded':'');d.dataset.i=i;
+    const op=k=>(r.ui?r.ui[k]:k=='l')?' open':'';
+    d.innerHTML=`<div class="head"><button type="button" data-act="fold" class="fold" aria-expanded="${r.folded?'false':'true'}" title="${r.folded?'Show settings':'Hide settings'}">${r.folded?'▸':'▾'}</button><button type="button" class="dot${r.vis!==false?'':' off'}" data-act="dot" style="--c:${r.color}" aria-pressed="${r.vis!==false}" aria-label="Show or hide on the graph. Press and hold, or right-click, to change color." title="Click: show or hide. Press and hold: change color."></button><input class="eq" data-k="eq" value="${esc(r.eq)}" placeholder="y = 2x + 1   or   A(2, 3)" aria-label="Equation or point"><button type="button" data-act="del" aria-label="Remove row" title="Remove row">\u00d7</button></div>
+<div class="kind"></div>
+<div class="pv" data-pv="eq" hidden></div>
+<details data-d="s" class="only-line"${op('s')}><summary>Line style</summary><div class="g3"><label>Style<select data-k="dash">${sel([['solid','Solid'],['dashed','Dashed'],['dotted','Dotted']],r.dash)}</select></label><label>Thickness<input type="range" data-k="w" min="1" max="10" step="0.5" value="${r.w}"></label><label>Arrows<select data-k="arr">${sel([['both','Both ends'],['start','Left/bottom'],['end','Right/top'],['none','None']],r.arr||'both')}</select></label></div></details>
+<details data-d="l"${op('l')}><summary>Label</summary><div class="g2"><label class="wide">Label text<span class="inl"><input data-k="lab" value="${esc(r.lab)}" placeholder="e.g. y = 2x + 1"><button type="button" data-act="useeq" class="only-line">Copy equation</button></span></label><div class="pv wide" data-pv="lab" hidden></div><small class="hint wide only-pts">Several points? Separate names with semicolons: A; B; C</small><label>Placement<select data-k="place">${sel([['above','Above'],['below','Below'],['on','On the line'],['right','Right'],['left','Left']],r.place)}</select></label><label class="only-line">Position along line<input type="range" data-k="pos" min="0" max="100" value="${r.pos}"></label><label class="chk only-line"><input type="checkbox" data-k="rot"${r.rot?' checked':''}>Tilt with line</label><label class="chk only-pts"><input type="checkbox" data-k="coords"${r.coords?' checked':''}>Show coordinates</label><label class="chk"><input type="checkbox" data-k="labOn"${r.labOn!==false?' checked':''}>Show label</label></div></details>`;
+    box.append(d);pvUpdate(d,i)})}
+$('#rows').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;supify(e.target,e);const r=rows[e.target.closest('.row').dataset.i];r[k]=e.target.type=='checkbox'?e.target.checked:e.target.value;if(k=='eq'||k=='lab'){const rw=e.target.closest('.row');pvUpdate(rw,+rw.dataset.i)}draw()});
+$('#rows').addEventListener('click',e=>{const a=e.target.dataset.act;if(!a)return;const i=+e.target.closest('.row').dataset.i;
+  if(a=='del')rows.splice(i,1);
+  if(a=='fold')rows[i].folded=!rows[i].folded;
+  if(a=='dot'){if(held){held=false;return}rows[i].vis=rows[i].vis===false}
+  if(a=='useeq')rows[i].lab=rows[i].eq.replace(/\s+/g,' ').trim();
+  renderRows();draw()});
+$('#add').onclick=()=>{rows.push({eq:'',color:COLORS[rows.length%COLORS.length],dash:'solid',w:'2.5',lab:'',pos:70,place:'above',rot:true,coords:false,arr:'both',vis:true,labOn:true});renderRows();draw();const q=document.querySelectorAll('.eq');q[q.length-1].focus()};
+
+function draw(){
+  const val=id=>{try{return compile($('#'+id).value)(0,0)}catch(e){return NaN}};
+  let x0=val('x0'),x1=val('x1'),xs=val('xs'),y0=val('y0'),y1=val('y1'),ys=val('ys');
+  if(live)({x0,x1,xs,y0,y1,ys}=live);
+  const fig=$('#fig');
+  if(![x0,x1,xs,y0,y1,ys].every(isFinite)||x1<=x0||y1<=y0||xs<=0||ys<=0||(x1-x0)/xs>200||(y1-y0)/ys>200){$('#note').textContent='Check the axis ranges: \u201cTo\u201d must be larger than \u201cFrom\u201d, and \u201cCount by\u201d must be positive.';return}
+  $('#note').textContent='';
+  const cell=+$('#cell').value,ls=+$('#ls').value,ct=$('#ct').value,xt=$('#xt').value,yt=$('#yt').value;
+  const W=live?live.W:(x1-x0)/xs*cell,H=live?live.H:(y1-y0)/ys*cell,L=xt||yt?64:56,R=36,T=ct?58:34,B=xt?64:44;
+  const TW=Math.round(L+W+R),TH=Math.round(T+H+B);view={L,T,W,H,TW,TH};
+  const sx=x=>L+(x-x0)/(x1-x0)*W,sy=y=>T+H-(y-y0)/(y1-y0)*H;
+  let s=`<svg id="fig" xmlns="http://www.w3.org/2000/svg" width="${TW}" height="${TH}" viewBox="0 0 ${TW} ${TH}" font-family="Helvetica,Arial,sans-serif"><rect width="100%" height="100%" fill="#fff"/><defs><clipPath id="cp"><rect x="${L}" y="${T}" width="${W}" height="${H}"/></clipPath></defs>`;
+  // grid
+  const gc0={light:'#d5dae0',standard:'#9ba6b2',bold:'#4a5560'}[$('#gw').value],gt=+$('#gt').value,gc=gc0&&[gc0,gt],mn=+$('#gm').value;
+  if(gc){
+    const ln=(a,b,c,d,w,o)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${gc[0]}" stroke-width="${w}" opacity="${o}"/>`;
+    if(mn>1){ticks(x0,x1,xs/mn).forEach(([k,v])=>{if(((k%mn)+mn)%mn)s+=ln(sx(v),T,sx(v),T+H,gc[1]*.5,.7)});
+             ticks(y0,y1,ys/mn).forEach(([k,v])=>{if(((k%mn)+mn)%mn)s+=ln(L,sy(v),L+W,sy(v),gc[1]*.5,.7)})}
+    ticks(x0,x1,xs).forEach(([k,v])=>s+=ln(sx(v),T,sx(v),T+H,gc[1],1));
+    ticks(y0,y1,ys).forEach(([k,v])=>s+=ln(L,sy(v),L+W,sy(v),gc[1],1))}
+  // axes
+  const ax=y0<=0&&y1>=0?sy(0):T+H,ay=x0<=0&&x1>=0?sx(0):L;
+  s+=`<g stroke="#111" stroke-width="1.8"><line x1="${L-6}" y1="${ax}" x2="${L+W+6}" y2="${ax}"/><line x1="${ay}" y1="${T-6}" x2="${ay}" y2="${T+H+6}"/></g><g fill="#111">`
+    +`<polygon points="${L+W+15},${ax} ${L+W+5},${ax-4.5} ${L+W+5},${ax+4.5}"/><polygon points="${L-15},${ax} ${L-5},${ax-4.5} ${L-5},${ax+4.5}"/>`
+    +`<polygon points="${ay},${T-15} ${ay-4.5},${T-5} ${ay+4.5},${T-5}"/><polygon points="${ay},${T+H+15} ${ay-4.5},${T+H+5} ${ay+4.5},${T+H+5}"/></g>`;
+  // numbers
+  const xe=+$('#xn').value,ye=+$('#yn').value,orig=x0<=0&&x1>=0&&y0<=0&&y1>=0;
+  s+=`<g font-size="12" fill="#111">`;
+  if(xe)ticks(x0,x1,xs).forEach(([k,v])=>{if(((k%xe)+xe)%xe||(Math.abs(v)<1e-9&&orig))return;s+=`<text x="${sx(v)}" y="${ax+(ax>T+H-1?20:16)}" text-anchor="middle">${fmt(v)}</text>`});
+  if(ye)ticks(y0,y1,ys).forEach(([k,v])=>{if(((k%ye)+ye)%ye||(Math.abs(v)<1e-9&&orig))return;s+=`<text x="${ay-8}" y="${sy(v)+4}" text-anchor="end">${fmt(v)}</text>`});
+  if(orig&&(xe||ye))s+=`<text x="${ay-8}" y="${ax+16}" text-anchor="end">0</text>`;
+  s+=`</g><g font-size="15" font-style="italic" fill="#111"><text x="${L+W+22}" y="${ax+5}">${sup($('#xl').value,15)}</text><text x="${ay}" y="${T-22}" text-anchor="middle">${sup($('#yl').value,15)}</text></g>`;
+  if(ct)s+=`<text x="${L+W/2}" y="24" text-anchor="middle" font-size="18" font-weight="bold" fill="#111">${sup(ct,18)}</text>`;
+  if(xt)s+=`<text x="${L+W/2}" y="${T+H+52}" text-anchor="middle" font-size="14" fill="#111">${sup(xt,14)}</text>`;
+  if(yt)s+=`<text transform="translate(16 ${T+H/2}) rotate(-90)" text-anchor="middle" font-size="14" fill="#111">${sup(yt,14)}</text>`;
+  // rows
+  const trace=f=>{const N=Math.max(600,Math.round(W)),segs=[];let cur=[],pp=null;
+    for(let k=0;k<=N;k++){const x=x0+(x1-x0)*k/N,y=f(x);
+      if(!isFinite(y)||Math.abs(y)>1e6){if(cur.length)segs.push(cur);cur=[];pp=null;continue}
+      const p=[sx(x),sy(y)];if(pp&&Math.abs(p[1]-pp[1])>H*1.2){segs.push(cur);cur=[]}
+      cur.push(p);pp=p}
+    if(cur.length)segs.push(cur);return segs};
+  let lines='',labels='',arrows='';
+  const eqs=document.querySelectorAll('.eq'),rowEls=document.querySelectorAll('.row');
+  rows.forEach((r,i)=>{
+    let p=null;
+    try{p=parseRow(r.eq);eqs[i]&&eqs[i].classList.remove('bad');rowEls[i]&&(rowEls[i].dataset.type=p?p.type:'')}catch(e){eqs[i]&&eqs[i].classList.add('bad');rowEls[i]&&(rowEls[i].dataset.type='bad');return}
+    if(!p)return;
+    const dash={solid:'',dashed:'stroke-dasharray="9 6"',dotted:'stroke-dasharray="1 6"'}[r.dash];
+    const halo=`fill="${r.color}" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round"`;
+    if(p.type=='pts'){
+      const cs=r.lab?r.lab.split(';').map(z=>z.trim()):[];p.pts.forEach((q,qi)=>{if(r.vis!==false)lines+=`<circle data-i="${i}" cx="${sx(q.x)}" cy="${sy(q.y)}" r="4.5" fill="${r.color}" stroke="#fff" stroke-width="1"/><circle data-i="${i}" cx="${sx(q.x)}" cy="${sy(q.y)}" r="11" fill="transparent" style="cursor:pointer"/>`;
+        const t=(cs[qi]||q.n)+(r.coords?`(${fmt(q.x)}, ${fmt(q.y)})`:'');
+        if(t&&r.labOn!==false){const[dx,dy,an]={above:[0,-11,'middle'],below:[0,ls+7,'middle'],on:[0,ls*.35,'middle'],right:[11,4,'start'],left:[-11,4,'end']}[r.place];labels+=lab(t,ls,halo,'translate(0 0)',sx(q.x)+dx,sy(q.y)+dy,an,i,qi)}});
+      return}
+    let segs;
+    if(p.type=='v'){const n=80;segs=[[...Array(n+1)].map((_,k)=>[sx(p.c),sy(y0+(y1-y0)*k/n)])]}else segs=trace(p.f);
+    if(r.vis!==false){const dd=segs.map(sg=>'M'+sg.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join('L')).join('');lines+=`<path data-i="${i}" d="${dd}" fill="none" stroke="${r.color}" stroke-width="${r.w}" stroke-linecap="round" stroke-linejoin="round" ${dash}/><path data-i="${i}" d="${dd}" fill="none" stroke="transparent" stroke-width="14" style="cursor:pointer"/>`;}
+    const vis=segs.flat().filter(q=>q[0]>=L&&q[0]<=L+W&&q[1]>=T&&q[1]<=T+H);
+    const arr=r.arr||'both';
+    if(vis.length>1&&r.vis!==false){const hd=(q,a)=>{const ang=Math.atan2(q[1]-a[1],q[0]-a[0])*180/Math.PI,sz=9+r.w*1.5,hw=sz*.42;arrows+=`<polygon points="0,0 ${-sz},${-hw} ${-sz},${hw}" fill="${r.color}" transform="translate(${q[0].toFixed(1)} ${q[1].toFixed(1)}) rotate(${ang.toFixed(1)})"/>`};
+      const n=vis.length;if(arr=='start'||arr=='both')hd(vis[0],vis[Math.min(4,n-1)]);if(arr=='end'||arr=='both')hd(vis[n-1],vis[Math.max(0,n-5)])}
+    if(r.lab&&r.labOn!==false&&vis.length>1){
+      const k=Math.round(r.pos/100*(vis.length-1)),q=vis[k],a=vis[Math.max(0,k-4)],b=vis[Math.min(vis.length-1,k+4)];
+      let ang=r.rot?Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI:0;if(ang>90)ang-=180;if(ang<-90)ang+=180;
+      const[dx,dy,an]={above:[0,-9,'middle'],below:[0,ls+3,'middle'],on:[0,ls*.35,'middle'],right:[11,4,'start'],left:[-11,4,'end']}[r.place];
+      labels+=lab(r.lab,ls,halo,`translate(${q[0].toFixed(1)} ${q[1].toFixed(1)}) rotate(${ang.toFixed(1)})`,dx,dy,an,i,0)}
+  });
+  s+=`<g clip-path="url(#cp)">${lines}</g>${arrows}${labels}</svg>`;
+  fig.outerHTML=s;if(!live)snap()}
+
+// export
+const svgStr=()=>new XMLSerializer().serializeToString($('#fig'));
+const uri=()=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgStr());
+const note=m=>$('#note').textContent=m;
+function save(name,href){const a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function toPng(cb){const img=new Image();img.onload=()=>{const c=document.createElement('canvas'),k=2;c.width=img.width*k;c.height=img.height*k;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(img,0,0,c.width,c.height);c.toBlob(cb)};img.onerror=()=>note('Could not build the image.');img.src=uri()}
+$('#dsvg').onclick=()=>{try{save('coordinate-grid.svg',uri())}catch(e){note('Saving is blocked here. Open the page as a local file to save.')}};
+$('#dpng').onclick=()=>{try{toPng(b=>save('coordinate-grid.png',URL.createObjectURL(b)))}catch(e){note('Saving is blocked here. Open the page as a local file to save.')}};
+$('#cpy').onclick=()=>{try{toPng(async b=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);note('Image copied.')}catch(e){note('Copying is blocked here. Use Save PNG from a local copy.')}})}catch(e){note('Copying is blocked here.')}};
+$('#prt').onclick=()=>{try{window.print()}catch(e){note('Printing is blocked here.')}};
+
+document.querySelectorAll('#ct,#xt,#yt,#xl,#yl').forEach(el=>el.addEventListener('input',e=>supify(el,e)));
+document.querySelectorAll('#panel input[id],#panel select[id]').forEach(el=>el.addEventListener('input',draw));
+renderRows();draw();
+
+$('#rows').addEventListener('toggle',e=>{const dt=e.target;if(dt.tagName!='DETAILS')return;const r=rows[dt.closest('.row').dataset.i];if(!r)return;r.ui=r.ui||{l:true};r.ui[dt.dataset.d]=dt.open},true);
+let held=false,ht=null;
+const PAL=['#000000','#c74440','#2d70b3','#388c46','#6042a6','#fa7e19','#e6007e','#0e7490','#8a6d3b','#7f7f7f'];
+const closeMenu=()=>{const m=$('#cmenu');if(m)m.remove()};
+function openMenu(btn,i){closeMenu();const m=document.createElement('div');m.id='cmenu';
+  m.innerHTML='<div class="pal">'+PAL.map(c=>`<button type="button" data-c="${c}" style="background:${c}" aria-label="Color ${c}"></button>`).join('')+'</div><label>Custom<input type="color" value="'+rows[i].color+'"></label>';
+  document.body.append(m);const b=btn.getBoundingClientRect();
+  m.style.left=Math.max(8,Math.min(b.left,innerWidth-m.offsetWidth-8))+'px';m.style.top=Math.max(8,Math.min(b.bottom+6,innerHeight-m.offsetHeight-8))+'px';
+  m.onclick=e=>{const c=e.target.dataset.c;if(c){rows[i].color=c;closeMenu();renderRows();draw()}};
+  m.querySelector('input').oninput=e=>{rows[i].color=e.target.value;btn.style.setProperty('--c',e.target.value);draw()}}
+$('#rows').addEventListener('pointerdown',e=>{const b=e.target.closest('.dot');held=false;clearTimeout(ht);if(!b)return;ht=setTimeout(()=>{held=true;openMenu(b,+b.closest('.row').dataset.i)},450)});
+['pointerup','pointerleave','pointercancel'].forEach(t=>$('#rows').addEventListener(t,()=>clearTimeout(ht),true));
+$('#rows').addEventListener('contextmenu',e=>{const b=e.target.closest('.dot');if(!b)return;e.preventDefault();openMenu(b,+b.closest('.row').dataset.i)});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#cmenu')&&!e.target.closest('.dot'))closeMenu()});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')closeMenu()});
+window.addEventListener('scroll',closeMenu,true);
+$('#foldall').onclick=()=>{const all=rows.length&&rows.every(r=>r.folded);rows.forEach(r=>r.folded=!all);renderRows();draw();$('#foldall').textContent=all?'Collapse all':'Expand all'};
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const eq=b.dataset.ex,pt=/^[A-Za-z]'*\(/.test(eq);rows.push({eq,color:COLORS[rows.length%COLORS.length],dash:'solid',w:'2.5',lab:pt?'':eq,pos:70,place:'above',rot:true,coords:pt,arr:'both',vis:true,labOn:true});renderRows();draw()});
+
+// pan and zoom
+let gz=false,mv=false,snapT=null;const ptrs=new Map(),wrap=document.querySelector('.wrap');
+const rd=id=>{try{return compile($('#'+id).value)(0,0)}catch(e){return NaN}};
+const fv=n=>String(+n.toPrecision(12));
+const nice=r=>{const p=Math.pow(10,Math.floor(Math.log10(r))),m=r/p;return +((m<1.41?1:m<3.16?2:m<7.07?5:10)*p).toPrecision(12)};
+function begin(){if(live)return true;if(!view)return false;const l={x0:rd('x0'),x1:rd('x1'),y0:rd('y0'),y1:rd('y1'),xs:rd('xs'),ys:rd('ys'),W:view.W,H:view.H};if(Object.values(l).some(v=>!isFinite(v)))return false;live=l;gz=false;mv=false;return true}
+const toSvg=(cx,cy)=>{const r=$('#fig').getBoundingClientRect(),k=view.TW/r.width;return[(cx-r.left)*k,(cy-r.top)*k]};
+const panBy=(dx,dy)=>{const wx=(live.x1-live.x0)/live.W,wy=(live.y1-live.y0)/live.H;live.x0-=dx*wx;live.x1-=dx*wx;live.y0+=dy*wy;live.y1+=dy*wy};
+function zoomAt(px,py,f){const l=live,w=l.x1-l.x0,h=l.y1-l.y0;if(w*f<1e-6||w*f>1e7||h*f<1e-6||h*f>1e7)return;
+  const ax=l.x0+(px-view.L)/l.W*w,ay=l.y1-(py-view.T)/l.H*h;
+  l.x0=ax-(ax-l.x0)*f;l.x1=ax+(l.x1-ax)*f;l.y0=ay-(ay-l.y0)*f;l.y1=ay+(l.y1-ay)*f;
+  const c=+$('#cell').value;l.xs=nice((l.x1-l.x0)/(l.W/c));l.ys=nice((l.y1-l.y0)/(l.H/c));gz=true}
+function commit(){clearTimeout(snapT);if(!live)return;const l=live,c=+$('#cell').value;live=null;
+  if(!mv){draw();return}
+  const nx=Math.max(1,Math.round(l.W/c)),ny=Math.max(1,Math.round(l.H/c));
+  const snap=(a,b,st,n)=>{let w=b-a;if(gz){st=nice(w/n);w=n*st}const a2=Math.round(((a+b)/2-w/2)/st)*st;return[a2,a2+w,st]};
+  const[x0,x1,xs]=snap(l.x0,l.x1,l.xs,nx),[y0,y1,ys]=snap(l.y0,l.y1,l.ys,ny);
+  $('#x0').value=fv(x0);$('#x1').value=fv(x1);$('#y0').value=fv(y0);$('#y1').value=fv(y1);
+  if(gz){$('#xs').value=fv(xs);$('#ys').value=fv(ys)}
+  draw()}
+let lbd=null,clickRow=null;
+wrap.addEventListener('pointerdown',e=>{if(e.button>0)return;const g=e.target.closest('.lbl'),h=e.target.closest('[data-i]');
+  ptrs.set(e.pointerId,[e.clientX,e.clientY]);try{wrap.setPointerCapture(e.pointerId)}catch(_){}
+  if(g&&view){const i=+g.dataset.i,k=g.dataset.k;lbd={i,k,s:toSvg(e.clientX,e.clientY),o:((rows[i].off||{})[k]||[0,0]).slice()};clickRow=null;return}
+  clickRow=h?+h.dataset.i:null;
+  if(begin())wrap.classList.add('dragging')});
+wrap.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(lbd&&p){const a=toSvg(e.clientX,e.clientY),r=rows[lbd.i];(r.off=r.off||{})[lbd.k]=[lbd.o[0]+a[0]-lbd.s[0],lbd.o[1]+a[1]-lbd.s[1]];draw();return}if(!p||!live)return;const n=[e.clientX,e.clientY];mv=true;
+  if(ptrs.size==1){const a=toSvg(p[0],p[1]),b=toSvg(n[0],n[1]);panBy(b[0]-a[0],b[1]-a[1])}
+  else if(ptrs.size==2){const o=[...ptrs.entries()].find(([id])=>id!=e.pointerId)[1],mid=q=>[(q[0]+o[0])/2,(q[1]+o[1])/2],d=q=>Math.hypot(q[0]-o[0],q[1]-o[1]);
+    const m0=mid(p),m1=mid(n),a=toSvg(m0[0],m0[1]),b=toSvg(m1[0],m1[1]),d0=d(p),d1=d(n);
+    panBy(b[0]-a[0],b[1]-a[1]);if(d0>0&&d1>0)zoomAt(b[0],b[1],d0/d1)}
+  ptrs.set(e.pointerId,n);draw()});
+const endDrag=e=>{ptrs.delete(e.pointerId);if(lbd){lbd=null;return}if(!ptrs.size){wrap.classList.remove('dragging');const cr=!mv&&clickRow!=null?clickRow:null;clickRow=null;commit();if(cr!=null)selectRow(cr)}};
+wrap.addEventListener('pointerup',endDrag);wrap.addEventListener('pointercancel',endDrag);
+wrap.addEventListener('wheel',e=>{if(!begin())return;e.preventDefault();mv=true;const k=e.ctrlKey?.01:.0015,dy=e.deltaY*(e.deltaMode==1?33:1),pt=toSvg(e.clientX,e.clientY);zoomAt(pt[0],pt[1],Math.exp(dy*k));draw();clearTimeout(snapT);snapT=setTimeout(commit,220)},{passive:false});
+$('#rv').onclick=()=>{live=null;['x0','y0'].forEach(i=>$('#'+i).value='-10');['x1','y1'].forEach(i=>$('#'+i).value='10');['xs','ys'].forEach(i=>$('#'+i).value='1');draw()};
+document.querySelectorAll('.sec>h2').forEach(h=>{const t=()=>{const c=h.parentElement.classList.toggle('closed');h.setAttribute('aria-expanded',String(!c))};h.tabIndex=0;h.setAttribute('role','button');h.setAttribute('aria-expanded','true');h.onclick=t;h.onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();t()}}});
+
+// hover highlight and row selection
+const hovs=document.createElement('style');document.head.append(hovs);let hov=null;
+function setHover(i){if(i===hov)return;hov=i;hovs.textContent=i==null?'':`#fig [data-i]:not([data-i="${i}"]){opacity:.3}`;document.querySelectorAll('.row').forEach((r,k)=>r.classList.toggle('hov',k===i))}
+function selectRow(i){const r=rows[i];if(!r)return;if(r.folded){r.folded=false;renderRows();draw()}
+  const sec=document.querySelector('.sec');if(sec&&sec.classList.contains('closed'))sec.querySelector('h2').click();
+  const el=document.querySelectorAll('.row')[i];if(!el)return;el.scrollIntoView({block:'nearest',behavior:'smooth'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+  const q=el.querySelector('.eq');if(q&&!matchMedia('(pointer:coarse)').matches)q.focus({preventScroll:true})}
+wrap.addEventListener('pointermove',e=>{if(e.buttons||lbd)return;const h=e.target.closest('[data-i]');setHover(h?+h.dataset.i:null)});
+wrap.addEventListener('pointerleave',()=>setHover(null));
+wrap.addEventListener('dblclick',e=>{const g=e.target.closest('.lbl');if(!g)return;const r=rows[+g.dataset.i];if(r&&r.off){delete r.off[g.dataset.k];draw()}});
+$('#rows').addEventListener('mouseover',e=>{const r=e.target.closest('.row');if(r)setHover(+r.dataset.i)});
+$('#rows').addEventListener('mouseleave',()=>setHover(null));
+
+// state, undo and redo, autosave, files, templates
+const FIELDS='#panel input[id],#panel select[id]';
+const ROWDEF={eq:'',color:'#000000',dash:'solid',w:'2.5',lab:'',pos:70,place:'above',rot:true,coords:false,arr:'both',vis:true,labOn:true};
+const getState=()=>{const f={};document.querySelectorAll(FIELDS).forEach(el=>f[el.id]=el.value);return{v:1,f,rows:rows.map(({ui,folded,...r})=>r)}};
+function setState(st,keep){document.querySelectorAll(FIELDS).forEach(el=>{if(st.f&&st.f[el.id]!==undefined)el.value=st.f[el.id]});
+  rows=(st.rows||[]).map((r,i)=>Object.assign({},ROWDEF,keep&&keep[i]?{folded:keep[i].folded,ui:keep[i].ui}:{},r));renderRows()}
+function updHist(){$('#undo').disabled=hi<=0;$('#redo').disabled=hi>=hist.length-1}
+function snap(now){clearTimeout(hT);const go=()=>{const j=JSON.stringify(getState());if(j===lastJ)return;lastJ=j;hist=hist.slice(0,hi+1);hist.push(j);if(hist.length>100)hist.shift();hi=hist.length-1;try{localStorage.setItem('cg-state',j)}catch(e){}updHist()};if(now)go();else hT=setTimeout(go,400)}
+function restore(j){lastJ=j;setState(JSON.parse(j),rows);draw();try{localStorage.setItem('cg-state',j)}catch(e){}updHist()}
+function undo(){snap(true);if(hi<=0)return;hi--;restore(hist[hi])}
+function redo(){snap(true);if(hi>=hist.length-1)return;hi++;restore(hist[hi])}
+$('#undo').onclick=undo;$('#redo').onclick=redo;
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();if(k=='z'){e.preventDefault();e.shiftKey?redo():undo()}else if(k=='y'){e.preventDefault();redo()}});
+const TPL={'4q':{x0:-10,x1:10,xs:1,y0:-10,y1:10,ys:1},q1:{x0:0,x1:10,xs:1,y0:0,y1:10,ys:1},q1b:{x0:0,x1:20,xs:2,y0:0,y1:20,ys:2},s5:{x0:-5,x1:5,xs:1,y0:-5,y1:5,ys:1}};
+$('#tpl').onchange=e=>{const k=e.target.value;e.target.value='';if(!k)return;snap(true);
+  if(k=='blank'){rows=[];renderRows()}
+  Object.entries(TPL[k=='blank'?'4q':k]).forEach(([id,v])=>$('#'+id).value=v);draw()};
+$('#sf').onclick=()=>{try{save('coordinate-grid.json','data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(getState(),null,1)))}catch(e){note('Saving files is blocked here. Your work is saved automatically in this browser.')}};
+$('#of').onclick=()=>$('#openf').click();
+$('#openf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const fr=new FileReader();fr.onload=()=>{try{const st=JSON.parse(fr.result);if(!st||!Array.isArray(st.rows))throw 0;snap(true);setState(st);draw();note('Opened '+f.name)}catch(err){note('That file could not be read.')}};fr.readAsText(f)};
+try{const j=localStorage.getItem('cg-state');if(j){const st=JSON.parse(j);if(st&&Array.isArray(st.rows)){setState(st);draw()}}}catch(e){}
+lastJ=JSON.stringify(getState());hist=[lastJ];hi=0;clearTimeout(hT);updHist();
+</script>
+</body>
+</html>
